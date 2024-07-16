@@ -1,3 +1,5 @@
+#STEP 1
+
 In the data cleaning process, you need to start by looking at your data (or knowing it at a business). 
 
 We used SELECT * FROM customer_id to look at the data.
