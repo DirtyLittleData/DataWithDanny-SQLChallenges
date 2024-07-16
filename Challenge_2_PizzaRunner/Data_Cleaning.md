@@ -10,18 +10,14 @@ We notice from the output that the "Exclusions" and "Extras" columns contain emp
 
 We then decided to use UPDATE rather than ALTER.
 
-```
-sql
-{
+```sql
+
 UPDATE pizza_runner.customer_orders
 SET exclusions = NULLIF(exclusions, ''),
     extras = NULLIF(extras, '');
-}
 
-{
 ALTER TABLE pizza_runner.customer_orders
 ADD COLUMN delivery_time TIMESTAMP;
-}
 ```
 
 ## Benefits of UPDATE TABLE:
