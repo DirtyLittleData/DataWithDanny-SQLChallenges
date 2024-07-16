@@ -1,5 +1,6 @@
 In the data cleaning process, you need to start by looking at your data (or knowing it at a business). 
 We used SELECT * FROM customer_id to look at the data.
+![image](https://github.com/user-attachments/assets/ebacaaf7-b879-45a6-ae2d-2cfcce96d2cc)
 
 We notice from the output that the "Exclusions" and "Extras" columns contain empty fields.
 
