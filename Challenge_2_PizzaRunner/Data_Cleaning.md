@@ -22,10 +22,12 @@ ADD COLUMN delivery_time TIMESTAMP;
 
 ## Benefits of UPDATE TABLE:
 *Good for* exists only for the duration of one session. One-time use, intermediate results
+
 *Bad for* data integrity, security
 
 ## Benefits of ALTER TABLE:
 *Good for* editing a schema permanently when necessary to reuse data
+
 *Bad for* audit trails
 
 Given the initial research, "figure out if it works with a temporary table, and then make a new table for the work." It would be best to work with newly created tables. 
