@@ -27,14 +27,25 @@ SELECT
     COUNT(DISTINCT(order_id)) AS count_order_id
 FROM customer_orders;
 ```
+| count_order_id |
+| -------------- |
+| 10             |
+---
 
 *If the question is asking how many unique orders based on the content of the order (unique combinations of pizza_id, extra, and exclusions) then the answer is 8.
 
 ```sql
 SELECT 
-	COUNT(DISTINCT CONCAT(pizza_id, '-', exclusions, '-', extras))
+	COUNT(DISTINCT CONCAT(pizza_id, '-', exclusions, '-', extras)) AS count_order_id
 FROM customer_orders;
 ```
+
+| count_order_id |
+| -------------- |
+| 8              |
+---
+
+
 
 #### Question #3
 
