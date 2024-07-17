@@ -153,47 +153,4 @@ ADD COLUMN delivery_time TIMESTAMP;
 
 Given the initial research, "figure out if it works with a temporary table, and then make a new table for the work." It would be best to work with newly created tables. 
 
-# Customer_Orders
-From the schema, it looks like missing values are issue with this table. Let's do a search to identify colums with NULLs or empty fields with UPDATE and then proceed to create a newly cleaned table.
-
-- Jonny's Note: I also enjoyed learning about the BEGIN to COMMIT capability to run commands sequentially. It seems like a safe way to write SQL.
-
-When a column field contains multiple values separated by commas it's called a denormalized structure.
-
-```
-BEGIN;
-
-UPDATE pizza_runner.customer_orders
-SET exclusions = NULLIF(exclusions, ''),
-    extras = NULLIF(extras, '');
-
-SELECT *
-FROM pizza_runner.customer_orders
-WHERE exclusions IS NULL OR extras IS NULL;
-
-
-COMMIT;
-```
-
-```
-CREATE TABLE pizza_runner.cleaned_customer_orders AS
-SELECT * FROM pizza_runner.customer_orders WHERE 1=0;
-
-BEGIN;
-
-UPDATE pizza_runner.customer_orders
-SET exclusions = NULLIF(exclusions, ''),
-    extras = NULLIF(extras, '');
-
-INSERT INTO pizza_runner.cleaned_customer_orders
-SELECT * FROM pizza_runner.customer_orders;
-
-COMMIT;
-
-SELECT *
-FROM pizza_runner.cleaned_customer_orders
-WHERE exclusions IS NULL OR extras IS NULL;
-```
-
-
-# Runner_Orders
+We decided to use different methods to experiment, and cleaned the data as you will find in the [0_Data_Clean.sql](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/0_Data_Clean.sql).
