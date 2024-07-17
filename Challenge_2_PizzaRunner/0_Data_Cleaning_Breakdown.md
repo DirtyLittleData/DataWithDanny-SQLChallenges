@@ -1,4 +1,4 @@
-# STEP 1
+# Data Cleaning Process
 
 Look at the schema.
 
@@ -156,6 +156,7 @@ Given the initial research, "figure out if it works with a temporary table, and 
 We decided to use different methods to experiment, and cleaned the data as you will find in the [0_Data_Clean.sql](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/0_Data_Clean.sql).
 
 
+# Cleaned Tables
 
 **Table #1**
 
@@ -168,7 +169,7 @@ We decided to use different methods to experiment, and cleaned the data as you w
 | 3         | 2021-01-08T00:00:00.000Z |
 | 4         | 2021-01-15T00:00:00.000Z |
 
----
+
 **Table #2**
 
     UPDATE pizza_runner.customer_orders
@@ -189,7 +190,7 @@ We decided to use different methods to experiment, and cleaned the data as you w
 | 4        | 103         | 1        | 4          |        | 2020-01-04T13:23:46.000Z |
 | 4        | 103         | 2        | 4          |        | 2020-01-04T13:23:46.000Z |
 
----
+
 **Table #3**
 
     CREATE TEMPORARY TABLE temp_runner_orders AS
@@ -223,7 +224,7 @@ We decided to use different methods to experiment, and cleaned the data as you w
 | 9        | 2         |                     |          |          | Customer Cancellation   |
 | 10       | 1         | 2020-01-11 18:50:20 | 10       | 10       |                         |
 
----
+
 **Table #4**
 
     SELECT * FROM pizza_names;
@@ -233,7 +234,7 @@ We decided to use different methods to experiment, and cleaned the data as you w
 | 1        | Meatlovers |
 | 2        | Vegetarian |
 
----
+
 **Table #5**
 
     CREATE TEMP TABLE split_toppings AS
@@ -263,7 +264,7 @@ We decided to use different methods to experiment, and cleaned the data as you w
 | 2        | 11         |
 | 2        | 12         |
 
----
+
 **Table #6**
 
     SELECT * FROM pizza_toppings;
@@ -285,7 +286,7 @@ We decided to use different methods to experiment, and cleaned the data as you w
 | 11         | Tomatoes     |
 | 12         | Tomato Sauce |
 
----
+
 **Table #7**
 
     CREATE TEMP TABLE temp_order_ex AS
@@ -318,7 +319,5 @@ We decided to use different methods to experiment, and cleaned the data as you w
 | 10       | 104         | 1        | null      | null  | 2020-01-11T18:34:49.000Z |
 | 10       | 104         | 1        | 2         | 1     | 2020-01-11T18:34:49.000Z |
 | 10       | 104         | 1        |  6        |  4    | 2020-01-11T18:34:49.000Z |
-
----
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
