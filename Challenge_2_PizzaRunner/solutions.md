@@ -3,9 +3,10 @@
 ---
 **Question #1**
 How many pizzas were ordered?
-'''sql
 
-    SELECT count(order_id)
+'''sql
+    SELECT 
+        COUNT(order_id)
     FROM Customer_orders;
 '''
 
