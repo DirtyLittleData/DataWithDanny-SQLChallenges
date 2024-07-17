@@ -20,6 +20,22 @@ How many pizzas were ordered?
 
 How many unique customer orders were made?
 
+*If the question is "order IDs", the answer is 10 .
+
+```sql
+SELECT
+    COUNT(DISTINCT(order_id)) AS count_order_id
+FROM customer_orders;
+```
+
+*If the question is asking how many unique orders based on the content of the order (unique combinations of pizza_id, extra, and exclusions) then the answer is 8.
+
+```sql
+SELECT 
+	COUNT(DISTINCT CONCAT(pizza_id, '-', exclusions, '-', extras))
+FROM customer_orders;
+```
+
 #### Question #3
 
 How many successful orders were delivered by each runner?

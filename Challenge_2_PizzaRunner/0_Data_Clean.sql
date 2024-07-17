@@ -1,14 +1,18 @@
 -- Inserts NULL values into empty fields
-SELECT * FROM runners;
 BEGIN;
 
-UPDATE pizza_runner.customer_orders
-SET exclusions = NULLIF(exclusions, ''),
-    extras = NULLIF(extras, '');
-
-SELECT *
-FROM pizza_runner.customer_orders
-WHERE exclusions IS NULL OR extras IS NULL;
+UPDATE customer_orders
+SET 
+    exclusions = CASE 
+        WHEN exclusions = '' THEN NULL 
+        WHEN LOWER(exclusions) = 'null' THEN NULL 
+        ELSE exclusions 
+    END,
+    extras = CASE 
+        WHEN extras = '' THEN NULL 
+        WHEN LOWER(extras) = 'null' THEN NULL 
+        ELSE extras 
+    END;
 
 COMMIT;
 
