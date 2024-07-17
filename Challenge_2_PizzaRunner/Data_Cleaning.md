@@ -153,18 +153,172 @@ ADD COLUMN delivery_time TIMESTAMP;
 
 Given the initial research, "figure out if it works with a temporary table, and then make a new table for the work." It would be best to work with newly created tables. 
 
-The table list is as follows:
-
-```sql
-SELECT * FROM runners;
-SELECT * FROM runner_orders;
--- Organized runner_orders called temp_runner_orders
-SELECT * FROM temp_runner_orders;
-SELECT * FROM pizza_names;
-SELECT * FROM pizza_recipes;
--- Organized pizza_recipes called split_toppings
-SELECT * FROM split_toppings;
-SELECT * FROM pizza_toppings;
-```
-
 We decided to use different methods to experiment, and cleaned the data as you will find in the [0_Data_Clean.sql](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/0_Data_Clean.sql).
+
+
+
+**Table #1**
+
+    SELECT * FROM runners;
+
+| runner_id | registration_date        |
+| --------- | ------------------------ |
+| 1         | 2021-01-01T00:00:00.000Z |
+| 2         | 2021-01-03T00:00:00.000Z |
+| 3         | 2021-01-08T00:00:00.000Z |
+| 4         | 2021-01-15T00:00:00.000Z |
+
+---
+**Table #2**
+
+    UPDATE pizza_runner.customer_orders
+    SET exclusions = NULLIF(exclusions, ''),
+        extras = NULLIF(extras, '');
+
+    SELECT *
+    FROM pizza_runner.customer_orders
+    WHERE exclusions IS NULL OR extras IS NULL;
+
+| order_id | customer_id | pizza_id | exclusions | extras | order_time               |
+| -------- | ----------- | -------- | ---------- | ------ | ------------------------ |
+| 1        | 101         | 1        |            |        | 2020-01-01T18:05:02.000Z |
+| 2        | 101         | 1        |            |        | 2020-01-01T19:00:52.000Z |
+| 3        | 102         | 1        |            |        | 2020-01-02T23:51:23.000Z |
+| 3        | 102         | 2        |            |        | 2020-01-02T23:51:23.000Z |
+| 4        | 103         | 1        | 4          |        | 2020-01-04T13:23:46.000Z |
+| 4        | 103         | 1        | 4          |        | 2020-01-04T13:23:46.000Z |
+| 4        | 103         | 2        | 4          |        | 2020-01-04T13:23:46.000Z |
+
+---
+**Table #3**
+
+    CREATE TEMPORARY TABLE temp_runner_orders AS
+    SELECT * FROM runner_orders;
+
+    UPDATE temp_runner_orders
+    SET 
+        pickup_time = NULLIF(NULLIF(pickup_time, ''), 'null'),
+        distance = CASE 
+            WHEN distance = 'null' THEN NULL
+            ELSE (REGEXP_REPLACE(COALESCE(distance, '0'), '[^0-9.]', '', 'g'))::FLOAT
+        END,
+        duration = CASE 
+            WHEN duration = 'null' THEN NULL
+            ELSE (REGEXP_REPLACE(COALESCE(duration, '0'), '[^0-9]', '', 'g'))::INTEGER
+        END,
+        cancellation = NULLIF(NULLIF(cancellation, ''), 'null');
+
+    SELECT * FROM temp_runner_orders;
+
+| order_id | runner_id | pickup_time         | distance | duration | cancellation            |
+| -------- | --------- | ------------------- | -------- | -------- | ----------------------- |
+| 1        | 1         | 2020-01-01 18:15:34 | 20       | 32       |                         |
+| 2        | 1         | 2020-01-01 19:10:54 | 20       | 27       |                         |
+| 3        | 1         | 2020-01-03 00:12:37 | 13.4     | 20       |                         |
+| 4        | 2         | 2020-01-04 13:53:03 | 23.4     | 40       |                         |
+| 5        | 3         | 2020-01-08 21:10:57 | 10       | 15       |                         |
+| 6        | 3         |                     |          |          | Restaurant Cancellation |
+| 7        | 2         | 2020-01-08 21:30:45 | 25       | 25       |                         |
+| 8        | 2         | 2020-01-10 00:15:02 | 23.4     | 15       |                         |
+| 9        | 2         |                     |          |          | Customer Cancellation   |
+| 10       | 1         | 2020-01-11 18:50:20 | 10       | 10       |                         |
+
+---
+**Table #4**
+
+    SELECT * FROM pizza_names;
+
+| pizza_id | pizza_name |
+| -------- | ---------- |
+| 1        | Meatlovers |
+| 2        | Vegetarian |
+
+---
+**Table #5**
+
+    CREATE TEMP TABLE split_toppings AS
+    SELECT 
+        pizza_id,
+        unnest(string_to_array(toppings, ', '))::integer AS topping_id
+    FROM pizza_recipes;
+
+    SELECT * FROM split_toppings;
+
+---
+
+| pizza_id | topping_id |
+| -------- | ---------- |
+| 1        | 1          |
+| 1        | 2          |
+| 1        | 3          |
+| 1        | 4          |
+| 1        | 5          |
+| 1        | 6          |
+| 1        | 8          |
+| 1        | 10         |
+| 2        | 4          |
+| 2        | 6          |
+| 2        | 7          |
+| 2        | 9          |
+| 2        | 11         |
+| 2        | 12         |
+
+---
+**Table #6**
+
+    SELECT * FROM pizza_toppings;
+
+---
+
+| topping_id | topping_name |
+| ---------- | ------------ |
+| 1          | Bacon        |
+| 2          | BBQ Sauce    |
+| 3          | Beef         |
+| 4          | Cheese       |
+| 5          | Chicken      |
+| 6          | Mushrooms    |
+| 7          | Onions       |
+| 8          | Pepperoni    |
+| 9          | Peppers      |
+| 10         | Salami       |
+| 11         | Tomatoes     |
+| 12         | Tomato Sauce |
+
+---
+**Table #7**
+
+    CREATE TEMP TABLE temp_order_ex AS
+    SELECT
+        order_id,
+        customer_id,
+        pizza_id,
+        UNNEST(STRING_TO_ARRAY(NULLIF(exclusions, ''), ',')) AS exclusion,
+        UNNEST(STRING_TO_ARRAY(NULLIF(extras, ''), ',')) AS extra,
+        order_time
+    FROM customer_orders;
+
+---
+
+    SELECT
+        *
+    FROM temp_order_ex;
+
+| order_id | customer_id | pizza_id | exclusion | extra | order_time               |
+| -------- | ----------- | -------- | --------- | ----- | ------------------------ |
+| 4        | 103         | 1        | 4         |       | 2020-01-04T13:23:46.000Z |
+| 4        | 103         | 1        | 4         |       | 2020-01-04T13:23:46.000Z |
+| 4        | 103         | 2        | 4         |       | 2020-01-04T13:23:46.000Z |
+| 5        | 104         | 1        | null      | 1     | 2020-01-08T21:00:29.000Z |
+| 6        | 101         | 2        | null      | null  | 2020-01-08T21:03:13.000Z |
+| 7        | 105         | 2        | null      | 1     | 2020-01-08T21:20:29.000Z |
+| 8        | 102         | 1        | null      | null  | 2020-01-09T23:54:33.000Z |
+| 9        | 103         | 1        | 4         | 1     | 2020-01-10T11:22:59.000Z |
+| 9        | 103         | 1        |           |  5    | 2020-01-10T11:22:59.000Z |
+| 10       | 104         | 1        | null      | null  | 2020-01-11T18:34:49.000Z |
+| 10       | 104         | 1        | 2         | 1     | 2020-01-11T18:34:49.000Z |
+| 10       | 104         | 1        |  6        |  4    | 2020-01-11T18:34:49.000Z |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
