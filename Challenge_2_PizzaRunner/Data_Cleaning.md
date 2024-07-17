@@ -153,4 +153,18 @@ ADD COLUMN delivery_time TIMESTAMP;
 
 Given the initial research, "figure out if it works with a temporary table, and then make a new table for the work." It would be best to work with newly created tables. 
 
+The table list is as follows:
+
+```sql
+SELECT * FROM runners;
+SELECT * FROM runner_orders;
+-- Organized runner_orders called temp_runner_orders
+SELECT * FROM temp_runner_orders;
+SELECT * FROM pizza_names;
+SELECT * FROM pizza_recipes;
+-- Organized pizza_recipes called split_toppings
+SELECT * FROM split_toppings;
+SELECT * FROM pizza_toppings;
+```
+
 We decided to use different methods to experiment, and cleaned the data as you will find in the [0_Data_Clean.sql](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/0_Data_Clean.sql).
