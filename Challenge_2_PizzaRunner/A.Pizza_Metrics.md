@@ -268,4 +268,21 @@ ORDER BY 1 DESC
 | 1           | Friday      |
 ---
 
+*Subquery attempt
+
+```sql
+SELECT 
+	order_count, 
+    day_name AS day_of_week 
+FROM (
+  SELECT 
+      COUNT(order_id) AS order_count,
+      TO_CHAR(order_time, 'Day') AS day_name,
+      EXTRACT(dow from order_time) AS day_num
+  FROM customer_orders
+  GROUP BY 2,3
+  ORDER BY 3
+) AS subq_day
+```
+
 [Return to Data Cleaning](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/0_Data_Cleaning_Breakdown.md)
