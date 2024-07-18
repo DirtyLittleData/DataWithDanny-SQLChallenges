@@ -245,7 +245,7 @@ ORDER BY 1
 | 23   | 3           |
 ---
 
-We check our solutions with [Gina](image.png) (nickname for claude.ai) and received a "well done!" on this one.
+We check our solutions with [Gina](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/Images/WellDone.png) (nickname for claude.ai) and received a "well done!" on this one.
 
 #### Question #10
 
