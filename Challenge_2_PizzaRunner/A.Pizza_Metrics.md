@@ -251,13 +251,14 @@ In case you're curious, this is what [Gina](https://github.com/BreakingPlaid/Dat
 
 What was the volume of orders for each day of the week?
 
+```sql
 SELECT 
     COUNT(order_id) AS order_count,
     TO_CHAR(order_time, 'Day') AS day_of_week
 FROM customer_orders
 GROUP BY 2
 ORDER BY 1 DESC
-
+```
 
 | order_count | day_of_week |
 | ----------- | ----------- |
