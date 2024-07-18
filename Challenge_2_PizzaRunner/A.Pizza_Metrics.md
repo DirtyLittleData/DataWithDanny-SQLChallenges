@@ -145,14 +145,109 @@ FROM test_CTE
 
 For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
+*We need to count whether or not an order had a change, meaning edits to the pizza ("change" is defined as anything exists in the exclusions *OR extras columns). We created a new column for change which counter changes based on NOT NULL values in the extras and exclusions columns. We created a new column for no change by giving the CASE when
+
+```sql
+SELECT 
+    customer_id,
+    COUNT(CASE 
+              WHEN exclusions IS NOT NULL OR extras IS NOT NULL THEN 1 
+          END) AS change,
+    COUNT(CASE 
+              WHEN exclusions IS NULL AND extras IS NULL THEN 1 
+          END) AS no_change
+FROM customer_orders c
+JOIN temp_runner_orders r ON r.order_id = c.order_id 
+WHERE cancellation IS NULL
+GROUP BY customer_id
+```
+
+| customer_id | change | no_change |
+| ----------- | ------ | --------- |
+| 101         | 0      | 2         |
+| 102         | 0      | 3         |
+| 105         | 1      | 0         |
+| 104         | 2      | 1         |
+| 103         | 3      | 0         |
+---
+
+```sql
+SELECT 
+    c.customer_id,
+    COUNT(CASE 
+              WHEN c.exclusions IS NOT NULL OR c.extras IS NOT NULL THEN 1 
+          END) AS changes,
+    COUNT(CASE 
+              WHEN c.exclusions IS NULL AND c.extras IS NULL THEN 1
+          END) AS no_change
+FROM customer_orders c
+JOIN temp_runner_orders r ON r.order_id = c.order_id 
+WHERE r.cancellation IS NULL
+GROUP BY c.customer_id;
+```
+
+| customer_id | changes | no_change |
+| ----------- | ------- | --------- |
+| 101         | 0       | 2         |
+| 102         | 0       | 3         |
+| 105         | 1       | 0         |
+| 104         | 2       | 1         |
+| 103         | 3       | 0         |
+---
+
 #### Question #8
 
 How many pizzas were delivered that had both exclusions and extras?
+
+```sql
+WITH change_CTE AS (SELECT 
+    customer_id,
+    COUNT(CASE 
+                WHEN exclusions IS NOT NULL AND NOT extras IS NOT NULL THEN 1 
+            END) AS both_change
+FROM customer_orders c
+JOIN temp_runner_orders r ON r.order_id = c.order_id 
+WHERE cancellation IS NULL
+GROUP BY customer_id)
+
+SELECT
+    SUM (both_change) AS total_change
+FROM change_CTE;
+```
+
+| total_change |
+| ------------ |
+| 3            |
+---
 
 #### Question #9
 
 What was the total volume of pizzas ordered for each hour of the day?
 
+*For this question, we'll consider all orders made even if order was subsequently canceled.
+
+```sql
+SELECT 
+    EXTRACT(HOUR FROM order_time) AS hour,
+    COUNT(order_id) AS order_count
+FROM customer_orders
+GROUP BY 1
+ORDER BY 1
+```
+
+| hour | order_count |
+| ---- | ----------- |
+| 11   | 1           |
+| 13   | 3           |
+| 18   | 3           |
+| 19   | 1           |
+| 21   | 3           |
+| 23   | 3           |
+---
+
+We check our solutions with [Gina](image.png) (nickname for claude.ai) and received a "well done!" on this one.
+
 #### Question #10
 
 What was the volume of orders for each day of the week?
+
