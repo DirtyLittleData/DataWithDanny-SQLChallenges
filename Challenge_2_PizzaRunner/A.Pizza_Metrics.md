@@ -245,9 +245,26 @@ ORDER BY 1
 | 23   | 3           |
 ---
 
-We check our solutions with [Gina](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/Images/WellDone.png) (nickname for claude.ai) and received a "well done!" on this one.
+In case you're curious, this is what [Gina](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/Images/WellDone.png) (nickname for claude.ai) recommended and received a "well done!" on this one.
 
 #### Question #10
 
 What was the volume of orders for each day of the week?
 
+SELECT 
+    COUNT(order_id) AS order_count,
+    TO_CHAR(order_time, 'Day') AS day_of_week
+FROM customer_orders
+GROUP BY 2
+ORDER BY 1 DESC
+
+
+| order_count | day_of_week |
+| ----------- | ----------- |
+| 5           | Saturday    |
+| 5           | Wednesday   |
+| 3           | Thursday    |
+| 1           | Friday      |
+---
+
+[Return to Data Cleaning](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/0_Data_Cleaning_Breakdown.md)
