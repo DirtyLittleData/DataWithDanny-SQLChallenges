@@ -32,6 +32,8 @@ FROM customer_orders;
 | 10             |
 ---
 
+#### Question #3
+
 *If the question is asking how many unique orders based on the content of the order (unique combinations of pizza_id, extra, and exclusions) then the answer is 8.
 
 ```sql
@@ -45,23 +47,99 @@ FROM customer_orders;
 | 8              |
 ---
 
-
-
-#### Question #3
+#### Question #4
 
 How many successful orders were delivered by each runner?
 
-#### Question #4
+```sql
+SELECT 
+    COUNT(CASE 
+          WHEN cancellation IS NULL THEN 1
+          END)
+FROM temp_runner_orders;
+```
 
-How many of each type of pizza was delivered?
+| pizza_id | count_pizza_id |
+| -------- | -------------- |
+| 1        | 9              |
+| 2        | 3              |
+---
 
 #### Question #5
 
 How many Vegetarian and Meatlovers were ordered by each customer?
 
+```sql
+SELECT 
+	customer_id,
+    c.pizza_id,
+    p.pizza_name,
+	COUNT(c.pizza_id) AS count_pizza_id 
+FROM customer_orders c
+JOIN temp_runner_orders r ON r.order_id = c.order_id
+JOIN pizza_names p ON p.pizza_id = c.pizza_id
+WHERE cancellation IS NULL
+GROUP BY c.pizza_id, p.pizza_name, customer_id
+ORDER BY customer_id, c.pizza_id
+```
+
+| customer_id | pizza_id | pizza_name | count_pizza_id |
+| ----------- | -------- | ---------- | -------------- |
+| 101         | 1        | Meatlovers | 2              |
+| 102         | 1        | Meatlovers | 2              |
+| 102         | 2        | Vegetarian | 1              |
+| 103         | 1        | Meatlovers | 2              |
+| 103         | 2        | Vegetarian | 1              |
+| 104         | 1        | Meatlovers | 3              |
+| 105         | 2        | Vegetarian | 1              |
+---
+
 #### Question #6
 
 What was the maximum number of pizzas delivered in a single order?
+
+*One way to solve this is by joining the appropriate tables, filtering with a WHERE statement to avoid counting canceled orders, and using the GROUP BY, ORDER BY, and LIMIT commands to yield the right result.
+
+```sql
+SELECT 
+	c.order_id,
+    COUNT(pizza_id) AS pizzas_per_order
+FROM customer_orders c
+JOIN temp_runner_orders r ON r.order_id = c.order_id
+WHERE cancellation IS NULL
+GROUP BY c.order_id
+ORDER BY pizzas_per_order DESC 
+LIMIT 1
+```
+
+| order_id | pizzas_per_order |
+| -------- | ---------------- |
+| 4        | 3                |
+---
+
+*Note: As an alternative to using LIMIT, we can create a CTE that includes the COUNT of pizzas_per_order in DESC order and query that new CTE to get the MAX of the new column COUNT of pizzas_per_order. 
+
+```sql
+WITH test_CTE AS(
+SELECT 
+	c.order_id,
+    COUNT(pizza_id) AS pizzas_per_order
+FROM customer_orders c
+JOIN temp_runner_orders r ON r.order_id = c.order_id
+WHERE cancellation IS NULL
+GROUP BY c.order_id
+ORDER BY pizzas_per_order DESC 
+)
+
+SELECT 
+	MAX(pizzas_per_order) AS most_pizzas_single_order
+FROM test_CTE
+```
+
+| most_pizzas_single_order |
+| ------------------------ |
+| 3                        |
+---
 
 #### Question #7
 
