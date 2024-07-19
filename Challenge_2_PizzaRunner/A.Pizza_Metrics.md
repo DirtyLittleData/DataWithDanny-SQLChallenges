@@ -243,9 +243,10 @@ ORDER BY 1
 | 19   | 1           |
 | 21   | 3           |
 | 23   | 3           |
----
 
 In case you're curious, this is what [Gina](https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges/blob/main/Challenge_2_PizzaRunner/Images/WellDone.png) (nickname for claude.ai) recommended and received a "well done!" on this one.
+
+---
 
 #### Question #10
 
