@@ -66,3 +66,29 @@ this solution came from AI to address the week 53 solution related to the ISO st
 | Week 3     | 2021-01-15T00:00:00.000Z | 2021-01-21T00:00:00.000Z | 1             |
 
 ---
+
+2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+
+'''sql
+SELECT 
+    r.runner_id,
+    AVG(EXTRACT(EPOCH FROM (r.pickup_time::timestamp - c.order_time)) / 60) AS avg_pickup_time_minutes
+FROM 
+    customer_orders c
+    JOIN temp_runner_orders r ON c.order_id = r.order_id
+WHERE 
+    r.pickup_time IS NOT NULL
+GROUP BY 
+    r.runner_id
+ORDER BY 
+    r.runner_id
+'''
+
+**solution**
+
+runner_id	avg_pickup_time_minutes
+1	15.677777777777777
+2	23.720000000000002
+3	10.466666666666667
+
+![alt text](image.png)
