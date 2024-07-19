@@ -67,7 +67,10 @@ this solution came from AI to address the week 53 solution related to the ISO st
 
 ---
 
-2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+## 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+
+to solve we removed rows with no pickup time (to account for canceled orders). We also had to case pickup time to timestamp in order to use it in a calculation with order_time to extract the amount of minutes between order_time and pickup_time.
+epoch extract the seconds which we then divided by 60 to covert minutes
 
 '''sql
 SELECT 
@@ -92,3 +95,5 @@ runner_id	avg_pickup_time_minutes
 3	10.466666666666667
 
 ![alt text](image.png)
+
+## 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
