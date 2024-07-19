@@ -66,3 +66,6 @@ this solution came from AI to address the week 53 solution related to the ISO st
 | Week 3     | 2021-01-15T00:00:00.000Z | 2021-01-21T00:00:00.000Z | 1             |
 
 ---
+
+2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+
