@@ -1,4 +1,4 @@
--- Copy and past this into schema to update when working on Fiddle
+-- Copy and paste this into schema to update when working on Fiddle
 
 CREATE SCHEMA pizza_runner;
 SET search_path = pizza_runner;
@@ -84,7 +84,7 @@ VALUES
   ('10', '1', '2020-01-11 18:50:20', '10km', '10minutes', 'null');
 
   -- Removes text from columns that need to be numeric, adds NULL to empty fields
-CREATE TEMPORARY TABLE temp_runner_orders AS
+CREATE TABLE temp_runner_orders AS
 SELECT * FROM runner_orders;
 
 -- Update the temporary table
@@ -126,7 +126,7 @@ VALUES
   (2, '4, 6, 7, 9, 11, 12');
 
   -- Unnests fields with numeric values which are separated by commas
-CREATE TEMP TABLE split_toppings AS
+CREATE TABLE split_toppings AS
 SELECT 
     pizza_id,
     unnest(string_to_array(toppings, ', '))::integer AS topping_id
@@ -157,7 +157,7 @@ VALUES
   (12, 'Tomato Sauce');
 
   -- Lovely code solution for separating fields with multiple numeric values separated by commas into rows and NULLIF
-CREATE TEMP TABLE temp_order_ex AS
+CREATE TABLE temp_order_ex AS
 SELECT
     order_id,
     customer_id,
