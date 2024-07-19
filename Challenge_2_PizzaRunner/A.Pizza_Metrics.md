@@ -269,7 +269,7 @@ ORDER BY 1 DESC
 | 1           | Friday      |
 ---
 
-*Subquery attempt
+*Subquery attempt toi do a similar technique to the solution above in one step (we definitely prefer a CTE).
 
 ```sql
 SELECT 
