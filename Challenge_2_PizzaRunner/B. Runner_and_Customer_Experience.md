@@ -99,3 +99,31 @@ runner_id	avg_pickup_time_minutes
 ![alt text](image.png)
 
 ## 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+
+'''sql
+SELECT
+	c.order_id,
+    EXTRACT(EPOCH FROM ((r.pickup_time::TIMESTAMP - c.order_time) / 60)) AS picked_up,
+    COUNT (c.order_id) AS counted_pizza
+FROM customer_orders c
+JOIN temp_runner_orders r ON c.order_id = r.order_id
+WHERE r.cancellation IS NULL
+GROUP BY c.order_id, r.pickup_time, c.order_time
+ORDER BY 3 DESC, 2 DESC
+'''
+
+**solution**
+
+
+| order_id | picked_up | counted_pizza |
+| -------- | --------- | ------------- |
+| 4        | 29.283333 | 3             |
+| 3        | 21.233333 | 2             |
+| 10       | 15.516667 | 2             |
+| 8        | 20.483333 | 1             |
+| 1        | 10.533333 | 1             |
+| 5        | 10.466667 | 1             |
+| 7        | 10.266667 | 1             |
+| 2        | 10.033333 | 1             |
+
+---
