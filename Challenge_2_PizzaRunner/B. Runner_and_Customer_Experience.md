@@ -31,6 +31,7 @@
 this solution came from AI to address the week 53 solution related to the ISO standards build into the calendar i
 **solution 2**
 
+'''sql
     WITH week_starts AS (
       SELECT 
         generate_series(
@@ -58,6 +59,7 @@ this solution came from AI to address the week 53 solution related to the ISO st
       ws.week_number, ws.week_start
     ORDER BY 
       ws.week_start;
+'''
 
 | week_label | week_start               | week_end                 | runners_count |
 | ---------- | ------------------------ | ------------------------ | ------------- |
