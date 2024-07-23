@@ -100,7 +100,9 @@ runner_id	avg_pickup_time_minutes
 
 ## 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
-'''sql
+To solve this we first extracted time it took from order time to pickup time using epoch which extracts seconds and then divided by 60 to get minues. Next we performed the aggregate count to count the number of pizza per order and of course grouped by our aggregate column order_id.
+
+```sql
 SELECT
 	c.order_id,
     EXTRACT(EPOCH FROM ((r.pickup_time::TIMESTAMP - c.order_time) / 60)) AS picked_up,
@@ -110,7 +112,7 @@ JOIN temp_runner_orders r ON c.order_id = r.order_id
 WHERE r.cancellation IS NULL
 GROUP BY c.order_id, r.pickup_time, c.order_time
 ORDER BY 3 DESC, 2 DESC
-'''
+```
 
 **solution**
 
@@ -125,5 +127,32 @@ ORDER BY 3 DESC, 2 DESC
 | 5        | 10.466667 | 1             |
 | 7        | 10.266667 | 1             |
 | 2        | 10.033333 | 1             |
+
+---
+
+## 4. What was the average distance travelled for each customer?
+---
+First we have to caste the disctace as a numeric column in order to perform mathmatical function of average on it. For every aggregate we must perfor a group by in this case customer id to identify average distance for each customer. 
+
+```sql
+    SELECT
+    	customer_id,
+        round(AVG(distance:: NUMERIC),0) as avg_distance
+        
+    FROM customer_orders c
+    JOIN temp_runner_orders r ON c.order_id = r.order_id
+    where cancellation is NULL
+    group by customer_id
+    ;
+```
+**solution**
+
+| customer_id | avg_distance |
+| ----------- | ------------ |
+| 101         | 20           |
+| 102         | 17           |
+| 105         | 25           |
+| 104         | 10           |
+| 103         | 23           |
 
 ---
