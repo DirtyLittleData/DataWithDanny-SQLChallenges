@@ -156,3 +156,24 @@ First we have to caste the disctace as a numeric column in order to perform math
 | 103         | 23           |
 
 ---
+
+
+## 5. What was the difference between the longest and shortest delivery times for all orders?
+
+
+---
+```sql
+    SELECT
+       MAX(duration::NUMERIC) - MIN(duration::NUMERIC) as max_min_duration_dif
+    FROM customer_orders c
+    JOIN temp_runner_orders r ON c.order_id = r.order_id
+    WHERE cancellation IS NULL;
+```
+
+**solution** 
+
+| max_min_duration_dif |
+| -------------------- |
+| 30                   |
+
+---
