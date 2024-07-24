@@ -206,6 +206,7 @@ To get the avg km per hour by runner we queried our new CTE using ave and group 
     	KM_HR_CTE
     group by 1;
 ```
+** solution **
 
 | runner_id | max_km_hr | min_km_hr | avg_km_hr |
 | --------- | --------- | --------- | --------- |
@@ -215,3 +216,82 @@ To get the avg km per hour by runner we queried our new CTE using ave and group 
 
 ---
 
+## 7. What is the successful delivery percentage for each runner?
+
+__________________
+
+---
+**Query #3**
+
+    select
+     runner_id,
+     count (pickup_time) as succesfull_delivery,
+     
+      count (cancellation) as cancelled_orders,
+      
+      count (*) as total_order
+     
+    from temp_runner_orders
+    group by runner_id;
+
+| runner_id | succesfull_delivery | cancelled_orders | total_order |
+| --------- | ------------------- | ---------------- | ----------- |
+| 3         | 1                   | 1                | 2           |
+| 2         | 3                   | 1                | 4           |
+| 1         | 4                   | 0                | 4           |
+
+---
+**Query #4**
+
+    WITH MATH_CTE as 
+    (
+    select
+     runner_id,
+     count (pickup_time) as succesfull_delivery,
+     
+      count (cancellation) as cancelled_orders,
+      
+      count (*) as total_order
+     
+    from temp_runner_orders
+    group by runner_id
+    )
+    
+    select 
+    runner_id,
+    round (
+    ((succesfull_delivery::decimal / total_order::decimal) * 100),0
+      )
+      as percent_success
+    from MATH_CTE
+    order by percent_success DESC
+      ;
+
+| runner_id | percent_success |
+| --------- | --------------- |
+| 1         | 100             |
+| 2         | 75              |
+| 3         | 50              |
+
+---
+**Query #5**
+
+    SELECT DISTINCT
+        runner_id,
+        ROUND(
+            100.0 * COUNT(CASE WHEN cancellation IS NULL THEN 1 END) OVER (PARTITION BY runner_id)
+            / COUNT(*) OVER (PARTITION BY runner_id),
+            2
+        ) AS percent_success
+    FROM temp_runner_orders
+    ORDER BY percent_success DESC;
+
+| runner_id | percent_success |
+| --------- | --------------- |
+| 1         | 100.00          |
+| 2         | 75.00           |
+| 3         | 50.00           |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/nPH11soDeoC5b3JdnBsigx/7)
