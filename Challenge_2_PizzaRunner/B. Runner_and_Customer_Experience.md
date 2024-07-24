@@ -177,3 +177,41 @@ First we have to caste the disctace as a numeric column in order to perform math
 | 30                   |
 
 ---
+
+## 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+
+we used distance (km traveled in a delvery) and duration (time in minutes from pickup to delivered) to calculate km per hour after casting each of these fields to numeric and dividing duration by 60 to covert minutes to hours and created a CTE with this new column.
+To get the avg km per hour by runner we queried our new CTE using ave and group by runner and added min and max by runner as an extra.
+
+```sql
+    with KM_HR_CTE as 
+    (
+    select 
+    	runner_id,
+        order_id,
+    	round(
+          distance::numeric / (duration::numeric/60),2) 
+        	as km_hr
+    from temp_runner_orders
+    where cancellation is null
+    order by runner_id
+    )
+    
+    select 
+    	runner_id,
+        min(km_hr) AS MAX_KM_HR,
+        max(km_hr) AS MIN_KM_HR,
+    	round (avg(km_hr), 2) AS AVG_KM_HR
+    from 
+    	KM_HR_CTE
+    group by 1;
+```
+
+| runner_id | max_km_hr | min_km_hr | avg_km_hr |
+| --------- | --------- | --------- | --------- |
+| 1         | 37.50     | 60.00     | 45.54     |
+| 2         | 35.10     | 93.60     | 62.90     |
+| 3         | 40.00     | 40.00     | 40.00     |
+
+---
+
