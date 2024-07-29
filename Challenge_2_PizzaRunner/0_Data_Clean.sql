@@ -170,3 +170,42 @@ FROM customer_orders;
 SELECT
     *
 FROM temp_order_ex;
+
+
+
+
+
+CREATE TEMPORARY TABLE temp_cleaned_orders AS
+SELECT
+    order_id,
+    customer_id,
+    pizza_id,
+    CASE 
+        WHEN exclusions = '' OR LOWER(exclusions) = 'null' THEN NULL 
+        ELSE exclusions 
+    END AS exclusions,
+    CASE 
+        WHEN extras = '' OR LOWER(extras) = 'null' OR extras IS NULL THEN NULL 
+        ELSE extras 
+    END AS extras,
+    order_time
+FROM customer_orders;
+
+-- Unnest the exclusions and extras
+CREATE TEMPORARY TABLE temp_unnested_orders AS
+SELECT
+    order_id,
+    customer_id,
+    pizza_id,
+    NULLIF(trim(e.exclusion), '')::INTEGER AS exclusion,
+    NULLIF(trim(x.extra), '')::INTEGER AS extra,
+    order_time
+FROM temp_cleaned_orders
+LEFT JOIN LATERAL unnest(string_to_array(exclusions, ',')) AS e(exclusion) ON true
+LEFT JOIN LATERAL unnest(string_to_array(extras, ',')) AS x(extra) ON true;
+
+-- View the result
+SELECT * FROM temp_unnested_orders ORDER BY order_id, customer_id, pizza_id;
+
+SELECT * FROM
+temp_cleaned_orders
