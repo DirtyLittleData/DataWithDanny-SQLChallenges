@@ -1,6 +1,8 @@
 # Data Cleaning Process
 
-Look at the schema.
+Original Schema.
+
+## runners table
 
 ```sql
 CREATE SCHEMA pizza_runner;
@@ -18,7 +20,10 @@ VALUES
   (2, '2021-01-03'),
   (3, '2021-01-08'),
   (4, '2021-01-15');
+```
 
+## customer_orders table
+```sql
 
 DROP TABLE IF EXISTS customer_orders;
 CREATE TABLE customer_orders (
@@ -48,6 +53,7 @@ VALUES
   ('10', '104', '1', 'null', 'null', '2020-01-11 18:34:49'),
   ('10', '104', '1', '2, 6', '1, 4', '2020-01-11 18:34:49');
 
+## runners_orders
 
 DROP TABLE IF EXISTS runner_orders;
 CREATE TABLE runner_orders (
@@ -73,6 +79,7 @@ VALUES
   ('9', '2', 'null', 'null', 'null', 'Customer Cancellation'),
   ('10', '1', '2020-01-11 18:50:20', '10km', '10minutes', 'null');
 
+## pizza_names
 
 DROP TABLE IF EXISTS pizza_names;
 CREATE TABLE pizza_names (
@@ -85,6 +92,7 @@ VALUES
   (1, 'Meatlovers'),
   (2, 'Vegetarian');
 
+## pizza_recipies
 
 DROP TABLE IF EXISTS pizza_recipes;
 CREATE TABLE pizza_recipes (
@@ -120,16 +128,19 @@ VALUES
   (12, 'Tomato Sauce');
 ```
 
+## DATA CLEANING 
+For data cleaning, we will start by examining our data. One way to look at our data - is to select * from each table 
 
-In the data cleaning process, you need to start by looking at your data (or knowing it at a business). 
 
-We used SELECT * FROM customer_id to look at the data.
+## CUSTOMER_ORDER
+
+SELECT * FROM customer_order to look at the data.
 
 ![image](https://github.com/user-attachments/assets/ebacaaf7-b879-45a6-ae2d-2cfcce96d2cc)
 
-We notice from the output that the "Exclusions" and "Extras" columns contain empty fields, null values, and comma-separated values which indicate a denormalized structure.
+We observe from the output that the "Exclusions" and "Extras" columns contain empty fields, null values, and comma-separated values (denormalized structure).
 
-We then decided to use UPDATE rather than ALTER.
+We then decided to use UPDATE rather than ALTER to keep the orignal data and create a temporary table to add NULL .
 
 ```sql
 
