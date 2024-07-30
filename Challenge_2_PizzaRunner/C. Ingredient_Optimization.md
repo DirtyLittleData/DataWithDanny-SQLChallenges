@@ -43,7 +43,6 @@ C. Ingredient Optimisation
 
 2. What was the most commonly added extra?
 
-
 ---
 **Solution**
 ```sql
@@ -68,26 +67,49 @@ C. Ingredient Optimisation
 3. What was the most common exclusion?
 
 ---
-**Solution**
+
+**Solution 1**
+
 ```sql
-    SELECT 
-    	t.exclusion, 
-        COUNT(*) as count,
-        p.topping_name
-    FROM temp_unnested_orders t
-    JOIN pizza_toppings p ON p.topping_id = t.exclusion 
-    WHERE extra IS NOT NULL
-    GROUP BY 1, 3
-    ORDER BY count DESC
-    ;
+    SELECT
+        p.topping_name,
+        COUNT(extra) AS extras_count
+      FROM temp_unnested_orders t
+      JOIN pizza_toppings p ON p.topping_id = t.extra
+      GROUP BY t.extra, p.topping_name
+      LIMIT 1;
 ```
 
-| exclusion | count | topping_name |
-| --------- | ----- | ------------ |
-| 2         | 2     | BBQ Sauce    |
-| 6         | 2     | Mushrooms    |
-| 4         | 2     | Cheese       |
+| topping_name | extras_count |
+| ------------ | ------------ |
+| Bacon        | 5            |
+---
 
+**Solution 2**
+
+```sql
+    WITH ranked_extras AS (
+      SELECT
+        t.extra,
+        COUNT(*) AS extras_count,
+        p.topping_name,
+        RANK() OVER (ORDER BY COUNT(*) DESC) AS rank
+      FROM temp_unnested_orders t
+      JOIN pizza_toppings p ON p.topping_id = t.extra
+      WHERE t.extra IS NOT NULL
+      GROUP BY t.extra, p.topping_name
+    )
+    SELECT
+    	topping_name,
+        extras_count
+    FROM ranked_extras
+    WHERE rank = 1
+    ORDER BY extras_count DESC, topping_name;
+```
+
+| topping_name | extras_count |
+| ------------ | ------------ |
+| Bacon        | 5            |
 ---
 
 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
