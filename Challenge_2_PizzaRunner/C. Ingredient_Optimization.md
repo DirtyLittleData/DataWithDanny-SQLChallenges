@@ -66,7 +66,30 @@ C. Ingredient Optimisation
 ---
 
 3. What was the most common exclusion?
-   
+
+---
+**Solution**
+```sql
+    SELECT 
+    	t.exclusion, 
+        COUNT(*) as count,
+        p.topping_name
+    FROM temp_unnested_orders t
+    JOIN pizza_toppings p ON p.topping_id = t.exclusion 
+    WHERE extra IS NOT NULL
+    GROUP BY 1, 3
+    ORDER BY count DESC
+    ;
+```
+
+| exclusion | count | topping_name |
+| --------- | ----- | ------------ |
+| 2         | 2     | BBQ Sauce    |
+| 6         | 2     | Mushrooms    |
+| 4         | 2     | Cheese       |
+
+---
+
 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
     Meat Lovers
     Meat Lovers - Exclude Beef
