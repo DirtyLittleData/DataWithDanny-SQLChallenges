@@ -192,7 +192,7 @@ SELECT
 FROM customer_orders;
 
 -- Unnest the exclusions and extras
-CREATE TEMPORARY TABLE temp_unnested_orders AS
+CREATE TABLE temp_unnested_orders AS
 SELECT
     order_id,
     customer_id,
@@ -207,5 +207,4 @@ LEFT JOIN LATERAL unnest(string_to_array(extras, ',')) AS x(extra) ON true;
 -- View the result
 SELECT * FROM temp_unnested_orders ORDER BY order_id, customer_id, pizza_id;
 
-SELECT * FROM
-temp_cleaned_orders
+SELECT * FROM temp_cleaned_orders
