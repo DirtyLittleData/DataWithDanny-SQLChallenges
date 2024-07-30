@@ -42,7 +42,29 @@ C. Ingredient Optimisation
 ---
 
 2. What was the most commonly added extra?
-   
+
+
+---
+**Solution**
+```sql
+    SELECT 
+    	t.extra, 
+        COUNT(*) as count,
+        p.topping_name
+    FROM temp_unnested_orders t
+    JOIN pizza_toppings p ON p.topping_id = t.extra 
+    WHERE extra IS NOT NULL
+    GROUP BY 1, 3
+    ORDER BY count DESC
+    LIMIT 1;
+```
+
+| extra | count | topping_name |
+| ----- | ----- | ------------ |
+| 1     | 5     | Bacon        |
+
+---
+
 3. What was the most common exclusion?
    
 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
