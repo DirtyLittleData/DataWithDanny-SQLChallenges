@@ -205,6 +205,6 @@ LEFT JOIN LATERAL unnest(string_to_array(exclusions, ',')) AS e(exclusion) ON tr
 LEFT JOIN LATERAL unnest(string_to_array(extras, ',')) AS x(extra) ON true;
 
 -- View the result
-SELECT * FROM temp_unnested_orders ORDER BY order_id, customer_id, pizza_id;
+-- SELECT * FROM temp_unnested_orders ORDER BY order_id, customer_id, pizza_id;
 
-SELECT * FROM temp_cleaned_orders
+-- SELECT * FROM temp_cleaned_orders
