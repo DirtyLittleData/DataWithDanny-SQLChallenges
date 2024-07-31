@@ -208,3 +208,22 @@ LEFT JOIN LATERAL unnest(string_to_array(extras, ',')) AS x(extra) ON true;
 -- SELECT * FROM temp_unnested_orders ORDER BY order_id, customer_id, pizza_id;
 
 -- SELECT * FROM temp_cleaned_orders
+
+
+--new cleaning and joining of cusotmer order table
+drop table if exists order_names_cleaned;
+
+create temp TABLE order_names_cleaned 
+as
+
+ SELECT 
+        o.order_id,
+        o.pizza_id,
+        n.pizza_name,
+        STRING_AGG(DISTINCT t_ex.topping_name, ', ') AS exclusions,
+        STRING_AGG(DISTINCT t_ex2.topping_name, ', ') AS extras
+    FROM temp_unnested_orders o
+    JOIN pizza_names n ON n.pizza_id = o.pizza_id
+    LEFT JOIN pizza_toppings t_ex ON t_ex.topping_id = o.exclusion
+    LEFT JOIN pizza_toppings t_ex2 ON t_ex2.topping_id = o.extra
+    GROUP BY o.order_id, o.pizza_id, n.pizza_name
