@@ -117,6 +117,56 @@ C. Ingredient Optimisation
     Meat Lovers - Exclude Beef
     Meat Lovers - Extra Bacon
     Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+
+******
+**Query**
+
+    WITH order_details AS (
+        SELECT 
+            o.order_id,
+            o.pizza_id,
+            n.pizza_name,
+            STRING_AGG(DISTINCT t_ex.topping_name, ', ') AS exclusions,
+            STRING_AGG(DISTINCT t_ex2.topping_name, ', ') AS extras
+        FROM temp_unnested_orders o
+        JOIN pizza_names n ON n.pizza_id = o.pizza_id
+        LEFT JOIN pizza_toppings t_ex ON t_ex.topping_id = o.exclusion
+        LEFT JOIN pizza_toppings t_ex2 ON t_ex2.topping_id = o.extra
+        GROUP BY o.order_id, o.pizza_id, n.pizza_name
+    )
+    SELECT 
+        order_id,
+        CASE 
+            WHEN exclusions IS NULL AND extras IS NULL THEN pizza_name
+            WHEN exclusions IS NOT NULL AND extras IS NULL THEN pizza_name || ' - Exclude ' || exclusions
+            WHEN exclusions IS NULL AND extras IS NOT NULL THEN pizza_name || ' - Extra ' || extras
+            ELSE pizza_name || ' - Exclude ' || exclusions || ' - Extra ' || extras
+        END AS order_item
+    FROM order_details
+    ORDER BY order_id;
+
+| order_id | order_item                                                      |
+| -------- | --------------------------------------------------------------- |
+| 1        | Meatlovers                                                      |
+| 2        | Meatlovers                                                      |
+| 3        | Meatlovers                                                      |
+| 3        | Vegetarian                                                      |
+| 4        | Meatlovers - Exclude Cheese                                     |
+| 4        | Vegetarian - Exclude Cheese                                     |
+| 5        | Meatlovers - Extra Bacon                                        |
+| 6        | Vegetarian                                                      |
+| 7        | Vegetarian - Extra Bacon                                        |
+| 8        | Meatlovers                                                      |
+| 9        | Meatlovers - Exclude Cheese - Extra Bacon, Chicken              |
+| 10       | Meatlovers - Exclude BBQ Sauce, Mushrooms - Extra Bacon, Cheese |
+
+---
+
+--this code will be update by jonny and shifra 
+
+*******
+
+
    
 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
     For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
