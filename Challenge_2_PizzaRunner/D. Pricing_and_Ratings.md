@@ -43,7 +43,27 @@ In order to future-proof this query, we decided to use columns from the original
 The "random()" function will generate a random value between 0 and 1. The second number in the syntax indicates the range and the + 1 iterates the values for variation. The function "floor()" rounds down to the nearest integer, giving us values 1, 2, 3, 4, or 5.
 
 ---
-**Query**
+**Query #1**
+
+```sql
+    CREATE TABLE runner_rating AS
+    SELECT 
+        order_id,
+        runner_id,
+        floor(random() * 5 + 1)::INTEGER AS rating
+    FROM runner_orders;
+```
+
+---
+
+**Query #2**
+
+```sql
+    ALTER TABLE runner_rating
+    ADD CONSTRAINT rating_check CHECK (rating BETWEEN 1 AND 5);
+```
+---
+**Query #3**
 
 ```sql
     SELECT *
