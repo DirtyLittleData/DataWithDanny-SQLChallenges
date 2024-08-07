@@ -34,7 +34,36 @@ This question is pretty straightforward; we'll use a CASE / WHEN statement to cr
 
 -Add cheese is $1 extra
 
+Assuming this means every entry of a number in the field of "extras" means a dollar extra.
+
 ***3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.***
+
+In order to future-proof this query, we decided to use columns from the original dataset and create a new table for which we can generate random values of ratings.
+
+The "random()" function will generate a random value between 0 and 1. The second number in the syntax indicates the range and the + 1 iterates the values for variation. The function "floor()" rounds down to the nearest integer, giving us values 1, 2, 3, 4, or 5.
+
+---
+**Query**
+
+```sql
+    SELECT *
+    FROM runner_rating;
+```
+
+| order_id | runner_id | rating |
+| -------- | --------- | ------ |
+| 1        | 1         | 4      |
+| 2        | 1         | 1      |
+| 3        | 1         | 5      |
+| 4        | 2         | 4      |
+| 5        | 3         | 5      |
+| 6        | 3         | 4      |
+| 7        | 2         | 5      |
+| 8        | 2         | 1      |
+| 9        | 2         | 1      |
+| 10       | 1         | 5      |
+
+---
 
 ***4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?***
 
