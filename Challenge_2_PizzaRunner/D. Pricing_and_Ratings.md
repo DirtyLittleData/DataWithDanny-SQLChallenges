@@ -1,6 +1,34 @@
 **D. Pricing and Ratings**
 
 ***1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?***
+---
+
+This question is pretty straightforward; we'll use a CASE / WHEN statement to create a population of the column and a column name. We then used the created table as a Common Table Expression (CTE). We then SUM the total and CONCAT a $ sign for the result.
+
+```sql
+    WITH price_CTE AS
+    (SELECT
+        p.pizza_name,
+        SUM(CASE   
+            WHEN c.pizza_id = 1 THEN 12
+            WHEN c.pizza_id = 2 THEN 10
+            ELSE 0
+        END) AS price
+    FROM customer_orders c
+    JOIN pizza_names p ON p.pizza_id = c.pizza_id
+    GROUP BY p.pizza_name
+    ORDER BY MIN(c.order_id))
+    
+    SELECT 
+    	CONCAT('$', SUM(price)) AS total_pizza_money
+    FROM price_CTE;
+```
+
+| total_pizza_money |
+| ----------------- |
+| $160              |
+
+---
 
 ***2. What if there was an additional $1 charge for any pizza extras?***
 
