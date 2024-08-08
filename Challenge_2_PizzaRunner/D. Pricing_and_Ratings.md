@@ -88,23 +88,166 @@ The "random()" function will generate a random value between 0 and 1. The second
 ***4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?***
 
 -customer_id
-
 -order_id
-
 -runner_id
-
 -rating
-
 -order_time
-
 -pickup_time
+-time between order and pickup
+-delivery duration
+-average speed
+-total number of pizzas
 
--Time between order and pickup
+We don't have time for reflection. We can't even ask Claudina what they would have given.
 
--Delivery duration
+---
+**Cleaned Customer Orders Creation**
+```sql
+    CREATE TEMP TABLE IF NOT EXISTS cleaned_customer_orders AS
+    SELECT
+    	order_id,
+        customer_id,
+        pizza_id,
+        order_time,
+        ROW_NUMBER()OVER() AS unique_id,
+        CASE
+        	WHEN exclusions IS NULL OR exclusions = 'null' OR exclusions = '' THEN NULL
+        	ELSE exclusions
+        END AS cleaned_exclusions,
+        CASE
+        	WHEN extras IS NULL OR extras = 'null' OR extras = '' THEN NULL
+        	ELSE extras
+        END AS cleaned_extras    
+    FROM customer_orders;
+```
+---
+**Cleaned Customer Orders**
 
--Average speed
+| order_id | customer_id | pizza_id | order_time               | unique_id | cleaned_exclusions | cleaned_extras |
+| -------- | ----------- | -------- | ------------------------ | --------- | ------------------ | -------------- |
+| 1        | 101         | 1        | 2020-01-01T18:05:02.000Z | 1         |                    |                |
+| 2        | 101         | 1        | 2020-01-01T19:00:52.000Z | 2         |                    |                |
+| 3        | 102         | 1        | 2020-01-02T23:51:23.000Z | 3         |                    |                |
+| 3        | 102         | 2        | 2020-01-02T23:51:23.000Z | 4         |                    |                |
+| 4        | 103         | 1        | 2020-01-04T13:23:46.000Z | 5         | 4                  |                |
+| 4        | 103         | 1        | 2020-01-04T13:23:46.000Z | 6         | 4                  |                |
+| 4        | 103         | 2        | 2020-01-04T13:23:46.000Z | 7         | 4                  |                |
+| 5        | 104         | 1        | 2020-01-08T21:00:29.000Z | 8         |                    | 1              |
+| 6        | 101         | 2        | 2020-01-08T21:03:13.000Z | 9         |                    |                |
+| 7        | 105         | 2        | 2020-01-08T21:20:29.000Z | 10        |                    | 1              |
+| 8        | 102         | 1        | 2020-01-09T23:54:33.000Z | 11        |                    |                |
+| 9        | 103         | 1        | 2020-01-10T11:22:59.000Z | 12        | 4                  | 1, 5           |
+| 10       | 104         | 1        | 2020-01-11T18:34:49.000Z | 13        |                    |                |
+| 10       | 104         | 1        | 2020-01-11T18:34:49.000Z | 14        | 2, 6               | 1, 4           |
 
--Total number of pizzas
+---
+**Runner Rating Creation**
+
+    CREATE TABLE runner_rating AS
+        SELECT 
+            order_id,
+            runner_id,
+            floor(random() * 5 + 1)::INTEGER AS rating
+        FROM runner_orders;
+
+    ALTER TABLE runner_rating
+        ADD CONSTRAINT rating_check CHECK (rating BETWEEN 1 AND 5);
+
+---
+**Runner Rating**
+
+| order_id | runner_id | rating |
+| -------- | --------- | ------ |
+| 1        | 1         | 1      |
+| 2        | 1         | 4      |
+| 3        | 1         | 5      |
+| 4        | 2         | 5      |
+| 5        | 3         | 4      |
+| 6        | 3         | 3      |
+| 7        | 2         | 2      |
+| 8        | 2         | 1      |
+| 9        | 2         | 3      |
+| 10       | 1         | 2      |
+
+---
+**Cleaned Runners Orders Creation**
+```sql
+    CREATE TEMP TABLE IF NOT EXISTS cleaned_runners_orders AS
+        SELECT
+            order_id,
+            runner_id,
+            CASE
+    			WHEN pickup_time IS NOT NULL AND (pickup_time != 'null' AND pickup_time != '') THEN TO_TIMESTAMP(pickup_time, 'YYYY-MM-DD HH24:MI:SS') 
+                ELSE NULL
+            END AS cleaned_pickup_time,
+            CASE
+                WHEN distance = 'null' OR distance = '' THEN NULL
+                ELSE CAST(REGEXP_REPLACE(distance, '[^0-9.]', '', 'g') AS NUMERIC)
+            END AS distance_km,
+            CASE
+                WHEN duration = 'null' OR duration = '' THEN NULL
+                ELSE CAST(REGEXP_REPLACE(duration, '[^0-9.]', '', 'g') AS NUMERIC)
+            END AS duration_min,
+            CASE
+                WHEN cancellation IS NULL OR cancellation = 'null' OR cancellation = '' THEN 'No'
+                ELSE 'Yes'
+            END AS is_cancelled
+        FROM runner_orders;
+```
+
+---
+**Cleaned Runners Orders**
+
+| order_id | runner_id | cleaned_pickup_time      | distance_km | duration_min | is_cancelled |
+| -------- | --------- | ------------------------ | ----------- | ------------ | ------------ |
+| 1        | 1         | 2020-01-01T18:15:34.000Z | 20          | 32           | No           |
+| 2        | 1         | 2020-01-01T19:10:54.000Z | 20          | 27           | No           |
+| 3        | 1         | 2020-01-03T00:12:37.000Z | 13.4        | 20           | No           |
+| 4        | 2         | 2020-01-04T13:53:03.000Z | 23.4        | 40           | No           |
+| 5        | 3         | 2020-01-08T21:10:57.000Z | 10          | 15           | No           |
+| 6        | 3         |                          |             |              | Yes          |
+| 7        | 2         | 2020-01-08T21:30:45.000Z | 25          | 25           | No           |
+| 8        | 2         | 2020-01-10T00:15:02.000Z | 23.4        | 15           | No           |
+| 9        | 2         |                          |             |              | Yes          |
+| 10       | 1         | 2020-01-11T18:50:20.000Z | 10          | 10           | No           |
+
+---
+**Solution**
+
+```sql
+    SELECT
+    	c.customer_id,
+        c.order_id,
+        r.runner_id,
+        rr.rating,
+        c.order_time,
+        r.cleaned_pickup_time,
+        r.cleaned_pickup_time - c.order_time AS time_between_order_and_pickup,
+        r.duration_min,
+        ROUND(AVG(duration_min) OVER(), 0) AS average_duration,
+        COUNT(c.order_id) OVER() AS succesful_pizzas
+    FROM cleaned_customer_orders c
+    LEFT JOIN cleaned_runners_orders r ON c.order_id = r.order_id
+    LEFT JOIN runner_rating rr ON c.order_id = rr.order_id
+    WHERE r.cleaned_pickup_time IS NOT NULL;
+```
+
+| customer_id | order_id | runner_id | rating | order_time               | cleaned_pickup_time      | time_between_order_and_pickup | duration_min | average_duration | succesful_pizzas |
+| ----------- | -------- | --------- | ------ | ------------------------ | ------------------------ | ----------------------------- | ------------ | ---------------- | ---------------- |
+| 101         | 1        | 1         | 1      | 2020-01-01T18:05:02.000Z | 2020-01-01T18:15:34.000Z | [object Object]               | 32           | 25               | 12               |
+| 101         | 2        | 1         | 4      | 2020-01-01T19:00:52.000Z | 2020-01-01T19:10:54.000Z | [object Object]               | 27           | 25               | 12               |
+| 102         | 3        | 1         | 5      | 2020-01-02T23:51:23.000Z | 2020-01-03T00:12:37.000Z | [object Object]               | 20           | 25               | 12               |
+| 102         | 3        | 1         | 5      | 2020-01-02T23:51:23.000Z | 2020-01-03T00:12:37.000Z | [object Object]               | 20           | 25               | 12               |
+| 103         | 4        | 2         | 5      | 2020-01-04T13:23:46.000Z | 2020-01-04T13:53:03.000Z | [object Object]               | 40           | 25               | 12               |
+| 103         | 4        | 2         | 5      | 2020-01-04T13:23:46.000Z | 2020-01-04T13:53:03.000Z | [object Object]               | 40           | 25               | 12               |
+| 103         | 4        | 2         | 5      | 2020-01-04T13:23:46.000Z | 2020-01-04T13:53:03.000Z | [object Object]               | 40           | 25               | 12               |
+| 104         | 5        | 3         | 4      | 2020-01-08T21:00:29.000Z | 2020-01-08T21:10:57.000Z | [object Object]               | 15           | 25               | 12               |
+| 105         | 7        | 2         | 2      | 2020-01-08T21:20:29.000Z | 2020-01-08T21:30:45.000Z | [object Object]               | 25           | 25               | 12               |
+| 102         | 8        | 2         | 1      | 2020-01-09T23:54:33.000Z | 2020-01-10T00:15:02.000Z | [object Object]               | 15           | 25               | 12               |
+| 104         | 10       | 1         | 2      | 2020-01-11T18:34:49.000Z | 2020-01-11T18:50:20.000Z | [object Object]               | 10           | 25               | 12               |
+| 104         | 10       | 1         | 2      | 2020-01-11T18:34:49.000Z | 2020-01-11T18:50:20.000Z | [object Object]               | 10           | 25               | 12               |
+
+---
+
 
 ***5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?***
