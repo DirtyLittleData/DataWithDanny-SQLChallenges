@@ -251,95 +251,106 @@ We don't have time for reflection. We can't even ask Claudina what they would ha
 
 
 ***5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?***
-**Schema (PostgreSQL v13)**
-
-**Rough Draft Solution 5**
 
 ```sql
-    SET search_path = pizza_runner;
+    CREATE TABLE IF NOT EXISTS cleaned_customer_orders AS
+        SELECT
+            order_id,
+            customer_id,
+            pizza_id,
+            order_time,
+            ROW_NUMBER() OVER (ORDER BY order_time) AS unique_id,
+            NULLIF(exclusions, '') AS cleaned_exclusions,
+            NULLIF(extras, '') AS cleaned_extras
+        FROM customer_orders;
 
 
-    CREATE TEMP TABLE IF NOT EXISTS cleaned_customer_orders AS
-    SELECT
-        order_id,
-        customer_id,
-        pizza_id,
-        order_time,
-        ROW_NUMBER() OVER (ORDER BY order_time) AS unique_id,
-        NULLIF(exclusions, '') AS cleaned_exclusions,
-        NULLIF(extras, '') AS cleaned_extras
-    FROM customer_orders;
-
-
-    CREATE TEMP TABLE IF NOT EXISTS runner_rating AS
-    SELECT 
-        order_id,
-        runner_id,
-        floor(random() * 5 + 1)::INTEGER AS rating
-    FROM runner_orders
-    WHERE cancellation IS NULL;
+    CREATE TABLE IF NOT EXISTS runner_rating AS
+        SELECT 
+            order_id,
+            runner_id,
+            floor(random() * 5 + 1)::INTEGER AS rating
+        FROM runner_orders
+        WHERE cancellation IS NULL;
 
 
     ALTER TABLE runner_rating
-    ADD CONSTRAINT rating_check CHECK (rating BETWEEN 1 AND 5);
+        ADD CONSTRAINT rating_check CHECK (rating BETWEEN 1 AND 5);
 
 
+    CREATE TABLE IF NOT EXISTS cleaned_runners_orders AS
+        SELECT
+            order_id,
+            runner_id,
+            CASE
+                WHEN pickup_time IS NOT NULL AND pickup_time != 'null' THEN TO_TIMESTAMP(pickup_time, 'YYYY-MM-DD HH24:MI:SS')
+                ELSE NULL
+            END AS cleaned_pickup_time,
+            CAST(NULLIF(REGEXP_REPLACE(distance, '[^0-9.]', '', 'g'), '') AS NUMERIC) AS distance_km,
+            CAST(NULLIF(REGEXP_REPLACE(duration, '[^0-9.]', '', 'g'), '') AS NUMERIC) AS duration_min,
+            CASE
+                WHEN cancellation IS NULL OR cancellation = 'null' OR cancellation = '' THEN 'No'
+                ELSE 'Yes'
+            END AS is_cancelled
+        FROM runner_orders;
 
-    CREATE TEMP TABLE IF NOT EXISTS cleaned_runners_orders AS
-    SELECT
-        order_id,
-        runner_id,
-        CASE
-            WHEN pickup_time IS NOT NULL AND pickup_time != 'null' THEN TO_TIMESTAMP(pickup_time, 'YYYY-MM-DD HH24:MI:SS')
-            ELSE NULL
-        END AS cleaned_pickup_time,
-        CAST(NULLIF(REGEXP_REPLACE(distance, '[^0-9.]', '', 'g'), '') AS NUMERIC) AS distance_km,
-        CAST(NULLIF(REGEXP_REPLACE(duration, '[^0-9.]', '', 'g'), '') AS NUMERIC) AS duration_min,
-        CASE
-            WHEN cancellation IS NULL OR cancellation = 'null' OR cancellation = '' THEN 'No'
-            ELSE 'Yes'
-        END AS is_cancelled
-    FROM runner_orders;
 
-
-    WITH successful_order_CTE AS (SELECT
-        c.customer_id,
-        c.order_id,
-        c.pizza_id,
-        r.runner_id,
-        r.distance_km,
-        rr.rating,
-        c.order_time,
-        r.cleaned_pickup_time,
-        r.cleaned_pickup_time - c.order_time AS time_between_order_and_pickup,
-        r.duration_min,
-        ROUND(AVG(r.duration_min) OVER (), 0) AS overall_average_duration,
-        COUNT(c.order_id) OVER () AS successful_pizzas
-    FROM cleaned_customer_orders c
-    LEFT JOIN cleaned_runners_orders r ON c.order_id = r.order_id
-    LEFT JOIN runner_rating rr ON c.order_id = rr.order_id
-    WHERE r.cleaned_pickup_time IS NOT NULL AND r.is_cancelled = 'No'),
+    WITH successful_order_CTE AS ( 
+        SELECT
+            c.customer_id,
+            c.order_id,
+            c.pizza_id,
+            r.runner_id,
+            r.distance_km,
+            rr.rating,
+            c.order_time,
+            r.cleaned_pickup_time,
+            r.cleaned_pickup_time - c.order_time AS time_between_order_and_pickup,
+            r.duration_min,
+            ROUND(AVG(r.duration_min) OVER (), 0) AS overall_average_duration,
+            COUNT(c.order_id) OVER () AS successful_pizzas
+        FROM cleaned_customer_orders c
+        LEFT JOIN cleaned_runners_orders r ON c.order_id = r.order_id
+        LEFT JOIN runner_rating rr ON c.order_id = rr.order_id
+        WHERE r.cleaned_pickup_time IS NOT NULL AND r.is_cancelled = 'No'
+        ),
+        
+        earnings_CTE AS (
+          SELECT
+        	 order_id,
+             distance_km * 0.30 AS earnings_km,
+             CASE
+            	WHEN pizza_id = 1 THEN 12
+            	WHEN pizza_id = 2 THEN 10
+            	ELSE pizza_id
+             END AS fixed_prices
+        FROM successful_order_CTE
+        ORDER BY order_id
+        ),
+        
+    	total_price_pizza_CTE AS (
+      	 SELECT
+    		order_id,
+          	earnings_km,
+        	SUM(fixed_prices) AS total_pizza_price
+         FROM earnings_CTE
+         GROUP BY 1, 2)
     
-    
-    earnings_CTE AS (SELECT DISTINCT
-    	 order_id,
-         distance_km * 0.30 AS earnings_km,
-         CASE
-        	WHEN pizza_id = 1 THEN 12
-        	WHEN pizza_id = 2 THEN 10
-        	ELSE pizza_id
-         END AS fixed_prices
-    FROM successful_order_CTE
-    ORDER BY order_id)
-    
-    SELECT
-    	SUM(fixed_prices) - SUM(earnings_km) AS net_revenue
-    FROM earnings_CTE;
+    SELECT 
+    	CONCAT('$',
+          ROUND(
+          SUM(total_pizza_price) - SUM(earnings_km), 2))
+          AS solution
+    FROM total_price_pizza_CTE;
+```
 
-###
-Functional code
+| solution |
+| -------- |
+| $94.44   |
 
+---
 
+```sql
 SELECT concat('$', round(sum(pizza_cost - delivery_cost)::numeric, 2)) AS pizza_runner_revenue
 FROM(
 SELECT order_id,
@@ -361,12 +372,4 @@ SELECT order_id,
    GROUP BY order_id, distance
    ORDER BY order_id
    ) t2;
-
-
 ```
-
-| net_revenue |
-| ----------- |
-| 59.400      |
-
----
