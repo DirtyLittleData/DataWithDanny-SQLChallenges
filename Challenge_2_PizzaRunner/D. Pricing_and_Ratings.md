@@ -335,6 +335,34 @@ We don't have time for reflection. We can't even ask Claudina what they would ha
     SELECT
     	SUM(fixed_prices) - SUM(earnings_km) AS net_revenue
     FROM earnings_CTE;
+
+###
+Functional code
+
+
+SELECT concat('$', round(sum(pizza_cost - delivery_cost)::numeric, 2)) AS pizza_runner_revenue
+FROM(
+SELECT order_id,
+          distance::numeric,
+          sum(pizza_cost) AS pizza_cost
+          round((0.30 * distance::numeric)::numeric, 2) AS delivery_cost
+   FROM (SELECT 
+            c.*,
+            CASE
+              WHEN c.pizza_id = 1 THEN 12
+              ELSE 10
+            END AS pizza_cost,
+            r.distance
+         FROM temp_cleaned_orders c
+         INNER JOIN pizza_recipes p ON c.pizza_id = p.pizza_id
+         INNER JOIN temp_runner_orders r ON c.order_id = r.order_id
+         WHERE r.cancellation IS NULL
+         ORDER BY c.order_id) t1
+   GROUP BY order_id, distance
+   ORDER BY order_id
+   ) t2;
+
+
 ```
 
 | net_revenue |
