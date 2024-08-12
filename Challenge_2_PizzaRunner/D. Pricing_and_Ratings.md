@@ -252,6 +252,8 @@ We don't have time for reflection. We can't even ask Claudina what they would ha
 
 ***5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?***
 
+We decided to start cleaning data as we work; the first section of the SQL code below reproduces the data cleaning from the last solution, and then works step by step to clean the data and get the right solution. The code at the bottom of this page explores a condensed straightforward approach with only a few steps.
+
 ```sql
     CREATE TABLE IF NOT EXISTS cleaned_customer_orders AS
         SELECT
@@ -347,7 +349,6 @@ We don't have time for reflection. We can't even ask Claudina what they would ha
 | solution |
 | -------- |
 | $94.44   |
-
 ---
 
 ```sql
