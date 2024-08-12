@@ -209,8 +209,6 @@ LEFT JOIN LATERAL unnest(string_to_array(extras, ',')) AS x(extra) ON true;
 
 -- SELECT * FROM temp_cleaned_orders
 
-
---new cleaning and joining of cusotmer order table
 drop table if exists order_names_cleaned;
 
 create temp TABLE order_names_cleaned 
