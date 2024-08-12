@@ -2,7 +2,7 @@ Case Study #3 - Foodie-Fi
 Danny Ma · May 18, 2021
 https://8weeksqlchallenge.com/case-study-3/
 
-![image](https://github.com/user-attachments/assets/b648ace2-21a9-4a63-ac77-b215b1ee01f3)
+<img src='https://github.com/user-attachments/assets/b648ace2-21a9-4a63-ac77-b215b1ee01f3' width= 50%, height = 50%>
 
 
 # Introduction
