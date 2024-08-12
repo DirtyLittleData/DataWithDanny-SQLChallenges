@@ -2,6 +2,9 @@ Case Study #3 - Foodie-Fi
 Danny Ma · May 18, 2021
 https://8weeksqlchallenge.com/case-study-3/
 
+![image](https://github.com/user-attachments/assets/b648ace2-21a9-4a63-ac77-b215b1ee01f3)
+
+
 # Introduction
 Subscription based businesses are super popular and Danny realised that there was a large gap in the market - he wanted to create a new streaming service that only had food related content - something like Netflix but with only cooking shows!
 
