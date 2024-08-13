@@ -69,5 +69,3 @@ SET search_path = foodie_fi;
 | trial         | pro monthly   | 325           | 7.0000000000000000   |
 
 ---
-
-[View on DB Fiddle](https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16)
