@@ -3,7 +3,7 @@
 1. How many customers has Foodie-Fi ever had?
 
 ---
-**Query #1**
+**BP Solution**
 
 ```sql
     SELECT 
@@ -16,7 +16,71 @@
 | 1000  |
 ---
 
-2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
+2. What is the monthly distribution of trial plan start_date values for our dataset — use the start of the month as the group by value.
+
+---
+**BP Solution**
+
+```sql
+    WITH months_CTE AS(
+      SELECT 
+      	EXTRACT(MONTH FROM start_date),
+        TO_CHAR(start_date, 'Month') AS month_name
+    FROM subscriptions
+    WHERE plan_id = 0
+      ORDER BY 1, 2
+    )
+    
+    SELECT 
+    	month_name,
+    	COUNT(month_name) 
+    FROM months_CTE
+    GROUP BY month_name;
+```
+
+| month_name | count |
+| ---------- | ----- |
+| April      | 81    |
+| August     | 88    |
+| December   | 84    |
+| February   | 68    |
+| January    | 88    |
+| July       | 89    |
+| June       | 79    |
+| March      | 94    |
+| May        | 88    |
+| November   | 75    |
+| October    | 79    |
+| September  | 87    |
+
+---
+
+```sql
+    SELECT 
+        TO_CHAR(start_date, 'Month') AS month_name,
+        COUNT(*) AS count_entries
+    FROM subscriptions
+    WHERE plan_id = 0
+    GROUP BY TO_CHAR(start_date, 'Month'), EXTRACT(MONTH FROM start_date)
+    ORDER BY EXTRACT(MONTH FROM start_date);
+```
+
+| month_name | count_entries |
+| ---------- | ------------- |
+| January    | 88            |
+| February   | 68            |
+| March      | 94            |
+| April      | 81            |
+| May        | 88            |
+| June       | 79            |
+| July       | 89            |
+| August     | 88            |
+| September  | 87            |
+| October    | 79            |
+| November   | 75            |
+| December   | 84            |
+
+---
 
 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
 
