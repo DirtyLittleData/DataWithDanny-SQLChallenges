@@ -12,7 +12,7 @@ Danny finds a few smart friends to launch his new startup Foodie-Fi in 2020 and 
 
 Danny created Foodie-Fi with a data driven mindset and wanted to ensure all future investment decisions and new features were decided using data. This case study focuses on using subscription style digital data to answer important business questions.
 
-# Available Data
+## Available Data
 Danny has shared the data design for Foodie-Fi and also short descriptions on each of the database tables - our case study focuses on only 2 tables but there will be a challenge to create a new table for the Foodie-Fi team.
 
 All datasets exist within the foodie_fi database schema - be sure to include this reference within your SQL scripts as you start exploring the data and answering the case study questions.
@@ -20,8 +20,8 @@ All datasets exist within the foodie_fi database schema - be sure to include thi
 # Entity Relationship Diagram
 
 ![ERD](image.png)\
-### Table 1: 
-plans Customers can choose which plans to join Foodie-Fi when they first sign up.
+### Table 1: plans 
+Customers can choose which plans to join Foodie-Fi when they first sign up.
 
 * *Basic plan* customers have limited access and can only stream their videos and is only available monthly at $9.90
 
@@ -72,10 +72,9 @@ When customers churn - they will keep their access until the end of their curren
 | 19          | 3       | 2020-08-29 |
 
 
-##### Interactive SQL Instance
+#### Interactive SQL Instance
 You can use the embedded DB Fiddle below to easily access these example datasets - this interactive session has everything you need to start solving these questions using SQL.
 
-https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16
 [View the SQL Fiddle](https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16)
 
 
@@ -97,18 +96,18 @@ Try to keep it as short as possible - you may also want to run some sort of join
 ## B. Data Analysis Questions
 1. How many customers has Foodie-Fi ever had?
 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
-What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
-3. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
-4. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
-5. What is the number and percentage of customer plans after their initial free trial?
-6. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
-7. How many customers have upgraded to an annual plan in 2020?
-8. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
-9. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
-10. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
+4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?. 
+5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
+6. What is the number and percentage of customer plans after their initial free trial?
+7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+8. How many customers have upgraded to an annual plan in 2020?
+9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
+10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
 ## C. Challenge Payment Question
-The Foodie-Fi team wants you to create a new payments table for the year 2020 that includes amounts paid by each customer in the subscriptions table with the following requirements:
+The Foodie-Fi team wants you to create a new **payment**s table for the year 2020 that includes amounts paid by each customer in the **subscriptions** table with the following requirements:
 
 * monthly payments always occur on the same day of month as the original start_date of any monthly paid plan
 * upgrades from basic to monthly or pro plans are reduced by the current paid amount in that month and start immediately
@@ -147,13 +146,10 @@ The Foodie-Fi team wants you to create a new payments table for the year 2020 th
 ## D. Outside The Box Questions
 The following are open ended questions which might be asked during a technical interview for this case study - there are no right or wrong answers, but answers that make sense from both a technical and a business perspective make an amazing impression!
 
-How would you calculate the rate of growth for Foodie-Fi?
-What key metrics would you recommend Foodie-Fi management to track over time to assess performance of their overall business?
-What are some key customer journeys or experiences that you would analyse further to improve customer retention?
-If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
-What business levers could the Foodie-Fi team use to reduce the customer churn rate? How would you validate the effectiveness of your ideas?
+1. How would you calculate the rate of growth for Foodie-Fi?
+2. What key metrics would you recommend Foodie-Fi management to track over time to assess performance of their overall business?
+3. What are some key customer journeys or experiences that you would analyse further to improve customer retention?
+4. If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
+5. What business levers could the Foodie-Fi team use to reduce the customer churn rate? How would you validate the effectiveness of your ideas?
 
-### Conclusion
-This case study should reflect realistic questions we usually focus on for all product related analytics requests in a wide variety of industries, especially in the digital space!
 
-Ready for the next 8 Week SQL challenge case study? Click on the banner below to get started with case study #4!
