@@ -83,25 +83,29 @@
 ---
 
 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
-
+   
 ---
 **BP Solution**
 
 ```sql
     SELECT 
-    	COUNT(plan_id),
-        EXTRACT(YEAR FROM start_date) as year   
+    	plan_id,
+    	COUNT(plan_id) AS count_2021 
     FROM subscriptions
     WHERE EXTRACT(YEAR FROM start_date) > 2020
-    GROUP BY EXTRACT(YEAR FROM start_date)
-    ORDER BY EXTRACT(YEAR FROM start_date);
+    GROUP BY 1
+    ORDER BY 1;
 ```
 
-| count | year |
-| ----- | ---- |
-| 202   | 2021 |
+| plan_id | count_2021 |
+| ------- | ---------- |
+| 1       | 8          |
+| 2       | 60         |
+| 3       | 63         |
+| 4       | 71         |
 
 ---
+
 
 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 
