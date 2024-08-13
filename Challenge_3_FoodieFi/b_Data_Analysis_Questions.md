@@ -5,9 +5,11 @@
 ---
 **Query #1**
 
+```sql
     SELECT 
     	COUNT(DISTINCT customer_id) 
     FROM subscriptions;
+```
 
 | count |
 | ----- |
