@@ -20,7 +20,7 @@ All datasets exist within the foodie_fi database schema - be sure to include thi
 # Entity Relationship Diagram
 
 ![ERD](image.png)\
-### Table 1: \
+### Table 1: 
 plans Customers can choose which plans to join Foodie-Fi when they first sign up.
 
 * *Basic plan* customers have limited access and can only stream their videos and is only available monthly at $9.90
@@ -74,6 +74,10 @@ When customers churn - they will keep their access until the end of their curren
 
 ##### Interactive SQL Instance
 You can use the embedded DB Fiddle below to easily access these example datasets - this interactive session has everything you need to start solving these questions using SQL.
+
+https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16
+[View the SQL Fiddle](https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16)
+
 
 You can click on the Edit on DB Fiddle link on the top right hand corner of the embedded session below and it will take you to a fully functional SQL editor where you can write your own queries to analyse the data.
 
