@@ -84,6 +84,25 @@
 
 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
 
+---
+**BP Solution**
+
+```sql
+    SELECT 
+    	COUNT(plan_id),
+        EXTRACT(YEAR FROM start_date) as year   
+    FROM subscriptions
+    WHERE EXTRACT(YEAR FROM start_date) > 2020
+    GROUP BY EXTRACT(YEAR FROM start_date)
+    ORDER BY EXTRACT(YEAR FROM start_date);
+```
+
+| count | year |
+| ----- | ---- |
+| 202   | 2021 |
+
+---
+
 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 
 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
