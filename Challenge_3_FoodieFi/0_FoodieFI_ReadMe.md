@@ -19,7 +19,7 @@ All datasets exist within the foodie_fi database schema - be sure to include thi
 
 # Entity Relationship Diagram
 
-![ERD](image.png)
+![ERD](image.png)/
 Table 1: plans
 Customers can choose which plans to join Foodie-Fi when they first sign up.
 
