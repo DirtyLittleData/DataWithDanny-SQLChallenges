@@ -1,3 +1,5 @@
+```sql
+
 CREATE SCHEMA foodie_fi;
     SET search_path = foodie_fi;
     
@@ -2679,3 +2681,5 @@ CREATE SCHEMA foodie_fi;
       ('1000', '4', '2020-06-04');
 
 ---
+
+```
