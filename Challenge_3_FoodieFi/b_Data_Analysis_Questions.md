@@ -126,6 +126,26 @@
 ---
 **Breaking Plaid Solution**
 
+We've come up with two solutions. The first is a straightforward set of two CTEs, where total_customers gives us the customer total which we know to be 1,000 and churned_customers calculates the count of customers who have churned whcih we know to be 307. The final query calculates the percent using the above CTEs.
+
+```sql
+WITH total_customers AS (
+    SELECT COUNT(DISTINCT customer_id) AS total
+    FROM subscriptions
+),
+churned_customers AS (
+    SELECT COUNT(DISTINCT customer_id) AS churned
+    FROM subscriptions
+    WHERE plan_id = 4
+)
+SELECT 
+    churned AS churn_count,
+    ROUND(100.0 * churned / total, 1) AS churn_percentage
+FROM churned_customers, total_customers;
+```
+
+The All-in-One™ solution creates the count of 307 by counting all customers WHERE the plan_id = 4 (churn). It then creates the total customer count of 1,000 within a subquery, which is used as the denominator of the created column three. In one step we convert the data type to FLOAT, multiply by 100, and add a percentage sign. JOIN is added as a courtesy to read the name "churn" rather than hard-coding the column name in.
+
 ```sql
     SELECT
     	p.plan_name,
