@@ -213,6 +213,21 @@ Using the LEAD clause that we'd used a couple questions earlier, we decided to c
     FROM next_plan_CTE
     WHERE plan_name = 'trial' AND next_plan = 'churn';
  ```
+#####
+next_plan_CTE sample outplut to help visualize the result of lead() window function that moves the following plan name up one row partitioned by customer
+| customer_id | start_date              | plan_name      | next_plan      |
+|-------------|-------------------------|----------------|----------------|
+| 1           | 2020-08-01T00:00:00.000Z | trial          | basic monthly  |
+| 1           | 2020-08-08T00:00:00.000Z | basic monthly  | null           |
+| 2           | 2020-09-20T00:00:00.000Z | trial          | pro annual     |
+| 2           | 2020-09-27T00:00:00.000Z | pro annual     | null           |
+| 3           | 2020-01-13T00:00:00.000Z | trial          | basic monthly  |
+| 3           | 2020-01-20T00:00:00.000Z | basic monthly  | null           |
+| 4           | 2020-01-17T00:00:00.000Z | trial          | basic monthly  |
+| 4           | 2020-01-24T00:00:00.000Z | basic monthly  | churn          |
+| 4           | 2020-04-21T00:00:00.000Z | churn          | null           |
+
+
 
 | count | percentage_churn |
 | ----- | ---------------- |
