@@ -172,6 +172,36 @@ The All-in-One™ solution creates the count of 307 by counting all customers WH
 
 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 
+---
+**Breaking Plaid Solution**
+
+Using the LEAD clause that we'd used a couple questions earlier, we decided to create a CTE that provides a side by side view of the original plan name with the next plan name for each customer. In the following SELECT statement, we queried the CTE and filtered the first column to only count the customers who had plan_name of "trial" and a next_plan as "churn" to find the numerator. Then we used a subquery to get the total customers, used that as the denominator and calculated that to get the trial to churn totals and total percent.
+
+```sql
+    WITH next_plan_CTE AS (
+      SELECT
+    	customer_id,
+        start_date,
+        plan_name,
+        LEAD(p.plan_name) OVER(PARTITION BY s.customer_id ORDER BY s.plan_id) as next_plan
+    FROM subscriptions s
+    JOIN plans p ON p.plan_id = s.plan_id
+    ORDER BY customer_id, start_date
+    )
+    
+    SELECT 
+    	COUNT(*),
+        CONCAT(COUNT(*) / (SELECT COUNT(DISTINCT customer_id) FROM subscriptions)::FLOAT * 100, '%') AS percentage_churn
+    FROM next_plan_CTE
+    WHERE plan_name = 'trial' AND next_plan = 'churn';
+ ```
+
+| count | percentage_churn |
+| ----- | ---------------- |
+| 92    | 9.2%             |
+---
+
+
 6. What is the number and percentage of customer plans after their initial free trial?
 
 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
