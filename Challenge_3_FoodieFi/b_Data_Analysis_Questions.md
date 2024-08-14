@@ -143,7 +143,18 @@ SELECT
     ROUND(100.0 * churned / total, 1) AS churn_percentage
 FROM churned_customers, total_customers;
 ```
+### total_customers CTE:
+| Description | Amount |
+|-------------|--------|
+| Total       | 1000   |
 
+### churned_cutomers CTE: 
+| Churned |
+|---------|
+| 307     |
+
+
+### Final solution: 
 | churn_count | churn_percentage |
 |-------------|------------------|
 | 307         | 30.7%            |
