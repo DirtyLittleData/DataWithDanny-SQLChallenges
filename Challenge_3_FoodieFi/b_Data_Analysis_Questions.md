@@ -332,7 +332,7 @@ ORDER BY c.plan_id
 ---
 
 8. How many customers have upgraded to an annual plan in 2020?
-
+---
 We learned that BETWEEN includes both the start and end values (as if using >= and <=).
 
 ```sql
