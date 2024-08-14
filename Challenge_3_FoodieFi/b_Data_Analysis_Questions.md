@@ -236,6 +236,67 @@ next_plan_CTE sample outplut to help visualize the result of lead() window funct
 
 
 6. What is the number and percentage of customer plans after their initial free trial?
+---
+
+**Breaking Plaid Solution**
+```sql
+WITH first_plan_after_trial AS (
+  SELECT
+    customer_id,
+    MAX(plan_id) AS last_plan_id
+  FROM
+    subscriptions
+  WHERE
+    plan_id != '0'
+  GROUP BY
+    customer_id
+  ORDER BY customer_id
+)
+
+SELECT
+  last_plan_id,
+  COUNT(*) AS number_plans,
+  ROUND(SUM(COUNT(*) OVER(PARTITION BY last_plan_id)) / COUNT(*), 2) AS percentage
+FROM
+  first_plan_after_trial
+GROUP BY
+  last_plan_id
+ORDER BY
+  1;
+```
+
+| last_plan_id | number_plans | percentage |
+|--------------|--------------|------------|
+|      1       |     125      |   12.50    |
+|      2       |     316      |   31.60    |
+|      3       |     252      |   25.20    |
+|      4       |     307      |   30.70    |
+---
+
+**Breaking Plaid Solution**
+```sql
+WITH count_CTE AS (
+    SELECT 
+        *,
+        COUNT(*) OVER() AS total_nontrial_plans
+    FROM subscriptions
+    WHERE plan_id != 0
+)
+SELECT
+    plan_id,
+    CONCAT(ROUND(COUNT(plan_id) * 100.0 / total_nontrial_plans, 2), '%') AS plan_percentage
+FROM count_CTE
+GROUP BY plan_id, total_nontrial_plans
+ORDER BY plan_id
+```
+
+| plan_id | plan_percentage |
+|---------|-----------------|
+|    1    |      33.09%     |
+|    2    |      32.67%     |
+|    3    |      15.64%     |
+|    4    |      18.61%     |
+---
 
 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 
