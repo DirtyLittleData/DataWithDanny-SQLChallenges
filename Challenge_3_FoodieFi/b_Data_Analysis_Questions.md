@@ -123,6 +123,33 @@
 
 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 
+---
+**Breaking Plaid Solution**
+
+```sql
+    SELECT
+    	p.plan_name,
+        COUNT(DISTINCT customer_id) as churn_count,
+        
+        CONCAT(COUNT(DISTINCT customer_id)/
+        (SELECT 
+         	COUNT(DISTINCT customer_id)
+         FROM subscriptions)
+         ::FLOAT * 100, '%')
+         AS churn_percent 
+         
+    FROM subscriptions s
+    JOIN plans p ON s.plan_id = p.plan_id
+    WHERE s.plan_id = 4
+    GROUP BY 1;
+```
+
+| plan_name | churn_count | churn_percent |
+| --------- | ----------- | ------------- |
+| churn     | 307         | 30.7%         |
+---
+
+
 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 
 6. What is the number and percentage of customer plans after their initial free trial?
