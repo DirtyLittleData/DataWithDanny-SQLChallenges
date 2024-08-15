@@ -349,6 +349,53 @@ WHERE plan_id = 3 and start_date BETWEEN '01-01-2020'::DATE AND '12-31-2020'::DA
 
 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 
+```sql
+	SELECT
+		customer_id,
+		plan_id,
+		start_date AS trial_date
+	FROM subscriptions
+	WHERE plan_id = 0
+```
+
+| customer_id | plan_id | trial_date                |
+|-------------|---------|---------------------------|
+| 1           | 0       | 2020-08-01T00:00:00.000Z  |
+| 2           | 0       | 2020-09-20T00:00:00.000Z  |
+| 3           | 0       | 2020-01-13T00:00:00.000Z  |
+| 4           | 0       | 2020-01-17T00:00:00.000Z  |
+---
+
+```sql
+	SELECT
+		customer_id,
+		plan_id,
+		start_date AS annual_start_date
+	FROM subscriptions
+	WHERE plan_id = 3
+ ```
+
+| customer_id | plan_id | annual_start_date         |
+|-------------|---------|---------------------------|
+| 2           | 3       | 2020-09-27T00:00:00.000Z  |
+| 9           | 3       | 2020-12-14T00:00:00.000Z  |
+| 16          | 3       | 2020-10-21T00:00:00.000Z  |
+| 17          | 3       | 2020-12-11T00:00:00.000Z  |
+---
+
+```sql
+	SELECT
+    		ROUND(AVG(annual_start_date - trial_date), 2) AS date_diff
+	FROM annual_plan_CTE a
+	JOIN trial_date_CTE t ON a.customer_id = t.customer_id
+	JOIN plans p ON p.plan_id = a.plan_id
+```
+
+|date_diff|
+|---------|
+|104.62   |
+---
+
 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
