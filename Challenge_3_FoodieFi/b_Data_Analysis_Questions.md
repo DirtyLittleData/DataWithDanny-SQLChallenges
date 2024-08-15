@@ -537,6 +537,62 @@ FROM day_group_CTE
 | 12        | 331       | 360     |
 ---
 
+```sql
+SELECT
+	day_group,
+    day_begin::TEXT || '-' || day_end::TEXT || ' days'  AS buckets
+FROM day_CTE;
+```
+
+| day_group | buckets       |
+|-----------|---------------|
+| 1         | 1-30 days     |
+| 2         | 31-60 days    |
+| 3         | 61-90 days    |
+| 4         | 91-120 days   |
+| 5         | 121-150 days  |
+| 6         | 151-180 days  |
+| 7         | 181-210 days  |
+| 8         | 211-240 days  |
+| 9         | 241-270 days  |
+| 10        | 271-300 days  |
+| 11        | 301-330 days  |
+| 12        | 331-360 days  |
+---
+
+**Claude.ai Consolidated Solution**
+
+```sql
+SELECT 
+    day_group, 
+    ((day_group - 1) * 30 + 1)::TEXT || '-' || (day_group * 30)::TEXT || ' days' AS buckets
+FROM day_group_CTE;
+```
+
 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 ---
 
+***Breaking Plaid Solution***
+
+```sql
+    WITH next_plan_CTE AS
+      (
+        SELECT 
+        customer_id,
+        plan_id,
+        start_date,
+        LEAD(plan_id) OVER (PARTITION BY customer_id ORDER BY start_date) AS next_plan,
+        LEAD(start_date) OVER (PARTITION BY customer_id ORDER BY start_date) AS next_start_date
+      FROM subscriptions
+      WHERE EXTRACT(YEAR FROM start_date) = 2020
+    )
+    
+    SELECT
+    	*
+    FROM next_plan_CTE
+    WHERE plan_id = 2 AND next_plan = 1;
+```
+
+There are no results to be displayed.
+
+---
