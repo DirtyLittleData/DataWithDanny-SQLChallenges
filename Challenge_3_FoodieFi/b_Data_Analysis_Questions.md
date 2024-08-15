@@ -299,6 +299,7 @@ ORDER BY plan_id
 ---
 
 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+---
 
 ```sql
 WITH start_date_CTE AS (
@@ -397,5 +398,116 @@ WHERE plan_id = 3 and start_date BETWEEN '01-01-2020'::DATE AND '12-31-2020'::DA
 ---
 
 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+---
 
-11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+```sql
+WITH trial_date_CTE AS
+(
+SELECT
+		customer_id,
+		plan_id,
+		start_date AS trial_date
+FROM subscriptions
+WHERE plan_id = 0
+),
+
+annual_plan_CTE AS 
+(
+SELECT
+	customer_id,
+	plan_id,
+	start_date AS annual_start_date
+FROM subscriptions
+WHERE plan_id = 3
+),
+
+difference_CTE AS (SELECT
+	t.customer_id,
+    annual_start_date - trial_date AS difference
+FROM annual_plan_CTE a
+JOIN trial_date_CTE t ON a.customer_id = t.customer_id
+JOIN plans p ON p.plan_id = a.plan_id),
+
+bucket_CTE AS (SELECT
+    customer_id,
+    CASE
+        WHEN difference BETWEEN 0 AND 30 THEN '1-30'
+        WHEN difference BETWEEN 31 AND 60 THEN '31-60'
+        WHEN difference BETWEEN 61 AND 90 THEN '61-90'
+        ELSE '90+'
+    END AS _30_day_buckets
+FROM difference_CTE)
+
+SELECT
+	COUNT(customer_id),
+    _30_day_buckets
+FROM bucket_CTE
+GROUP BY _30_day_buckets
+```
+| Count | _30_day_buckets |
+|-------|-----------------|
+|   49  | 1-30            |
+|   24  | 31-60           |
+|   34  | 61-90           |
+|  151  | 90+             |
+---
+
+```sql
+WITH trial_date_CTE AS
+(
+SELECT
+		customer_id,
+		plan_id,
+		start_date AS trial_date
+FROM subscriptions
+WHERE plan_id = 0
+),
+
+annual_plan_CTE AS 
+(
+SELECT
+	customer_id,
+	plan_id,
+	start_date AS annual_start_date
+FROM subscriptions
+WHERE plan_id = 3
+),
+
+difference_CTE AS (SELECT
+	t.customer_id,
+    annual_start_date - trial_date AS difference
+FROM annual_plan_CTE a
+JOIN trial_date_CTE t ON a.customer_id = t.customer_id
+JOIN plans p ON p.plan_id = a.plan_id),
+
+bucket_CTE AS (SELECT 
+	customer_id,
+    difference,
+    WIDTH_BUCKET(difference, 0, 30 * 12, 12) AS day_group
+FROM 
+    difference_CTE)
+
+SELECT
+	day_group,
+    COUNT(customer_id)
+FROM bucket_CTE
+GROUP BY 1
+```
+
+| day_group | count |
+|-----------|-------|
+| 1         | 48    |
+| 2         | 25    |
+| 3         | 33    |
+| 4         | 35    |
+| 5         | 43    |
+| 6         | 35    |
+| 7         | 27    |
+| 8         | 4     |
+| 9         | 5     |
+| 10        | 1     |
+| 11        | 1     |
+| 12        | 1     |
+---
+
+12. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
