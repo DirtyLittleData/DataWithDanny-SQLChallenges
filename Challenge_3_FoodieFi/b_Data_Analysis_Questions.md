@@ -301,6 +301,7 @@ ORDER BY plan_id
 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 ---
 
+
 ```sql
 WITH start_date_CTE AS (
     SELECT 
@@ -350,6 +351,7 @@ WHERE plan_id = 3 and start_date BETWEEN '01-01-2020'::DATE AND '12-31-2020'::DA
 
 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 
+**Breaking Plaid Solution**
 ```sql
 	SELECT
 		customer_id,
@@ -400,6 +402,7 @@ WHERE plan_id = 3 and start_date BETWEEN '01-01-2020'::DATE AND '12-31-2020'::DA
 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 ---
 
+**Breaking Plaid Solution**
 ```sql
 WITH trial_date_CTE AS
 (
@@ -511,3 +514,5 @@ GROUP BY 1
 ---
 
 12. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+---
+
