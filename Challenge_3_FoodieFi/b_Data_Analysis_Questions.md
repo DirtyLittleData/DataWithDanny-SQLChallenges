@@ -513,6 +513,30 @@ GROUP BY 1
 | 12        | 1     |
 ---
 
-12. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+```sql
+SELECT
+    day_group,
+    (day_group - 1) * 30 + 1 AS day_begin,
+    day_group * 30 AS day_end
+FROM day_group_CTE
+```
+
+| day_group | day_begin | day_end |
+|-----------|-----------|---------|
+| 1         | 1         | 30      |
+| 2         | 31        | 60      |
+| 3         | 61        | 90      |
+| 4         | 91        | 120     |
+| 5         | 121       | 150     |
+| 6         | 151       | 180     |
+| 7         | 181       | 210     |
+| 8         | 211       | 240     |
+| 9         | 241       | 270     |
+| 10        | 271       | 300     |
+| 11        | 301       | 330     |
+| 12        | 331       | 360     |
+---
+
+11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 ---
 
