@@ -593,6 +593,4 @@ FROM day_group_CTE;
     WHERE plan_id = 2 AND next_plan = 1;
 ```
 
-There are no results to be displayed.
-
 ---
