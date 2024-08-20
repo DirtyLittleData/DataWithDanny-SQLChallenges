@@ -1,6 +1,5 @@
 Case Study #3 - Foodie-Fi\
 Danny Ma · May 18, 2021\
-https://8weeksqlchallenge.com/case-study-3/
 
 <img src='https://github.com/user-attachments/assets/b648ace2-21a9-4a63-ac77-b215b1ee01f3' width= 50%, height = 50%>
 
@@ -153,4 +152,5 @@ The following are open ended questions which might be asked during a technical i
 4. If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
 5. What business levers could the Foodie-Fi team use to reduce the customer churn rate? How would you validate the effectiveness of your ideas?
 
+[← Back to main page](https://8weeksqlchallenge.com/case-study-3/)
 
