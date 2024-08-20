@@ -1,7 +1,7 @@
 Case Study #3 - Foodie-Fi\
 Danny Ma · May 18, 2021\
 
-![Challenge #3 of Danny's Virtual Data Internship](https://github.com/user-attachments/assets/b648ace2-21a9-4a63-ac77-b215b1ee01f3 width="50%" height="50%")
+![Challenge #3 of Danny's Virtual Data Internship](https://github.com/user-attachments/assets/b648ace2-21a9-4a63-ac77-b215b1ee01f3)
 
 
 # Introduction
