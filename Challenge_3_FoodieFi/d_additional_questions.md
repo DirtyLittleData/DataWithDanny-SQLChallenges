@@ -36,6 +36,23 @@ From the data, seems like October is a strong month and May is a weak month.
 
 ---
 
+You can also ORDER BY the formatted_amount for a clearer picture.
+
+| payment_month | formatted_amount |
+|---------------|------------------|
+| October       | $8,771.00        |
+| September     | $7,655.80        |
+| August        | $7,406.50        |
+| January       | $7,358.30        |
+| April         | $6,631.90        |
+| November      | $6,481.80        |
+| July          | $6,441.80        |
+| February      | $6,333.50        |
+| December      | $6,114.00        |
+| June          | $5,556.20        |
+| March         | $5,010.20        |
+| May           | $4,512.20        |
+
 
 2. What key metrics would you recommend Foodie-Fi management to track over time to assess performance of their overall business?
 
