@@ -3,6 +3,39 @@ The following are open ended questions which might be asked during a technical i
 
 1. How would you calculate the rate of growth for Foodie-Fi?
 
+---
+**Breaking Plaid Thoughts**
+
+Using our previous payments table (found in the Schema file), first I wanted to check on monthly totals to find whether certain months cause a spike in sales. 
+
+From the data, seems like October is a strong month and May is a weak month.
+
+```sql
+    SELECT
+    	INITCAP(TO_CHAR(payment_date::DATE, 'month')) AS payment_month,
+        TO_CHAR(SUM(amount), 'FM$999,999,999.00') AS formatted_amount
+    FROM payments
+    GROUP BY 1
+    ORDER BY MIN(payment_date::DATE);
+```
+
+| payment_month | formatted_amount |
+| ------------- | ---------------- |
+| January       | $7,358.30        |
+| February      | $6,333.50        |
+| March         | $5,010.20        |
+| April         | $6,631.90        |
+| May           | $4,512.20        |
+| June          | $5,556.20        |
+| July          | $6,441.80        |
+| August        | $7,406.50        |
+| September     | $7,655.80        |
+| October       | $8,771.00        |
+| November      | $6,481.80        |
+| December      | $6,114.00        |
+
+---
+
 
 2. What key metrics would you recommend Foodie-Fi management to track over time to assess performance of their overall business?
 
