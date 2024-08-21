@@ -2683,3 +2683,61 @@ CREATE SCHEMA foodie_fi;
 ---
 
 ```
+
+---
+
+*** Added schema data from Breaking Plaid
+
+```sql
+DROP TABLE IF EXISTS payments;
+CREATE TABLE payments AS
+SELECT
+  customer_id,
+  plan_id,
+  plan_name,
+  payment_date::date::varchar,
+  CASE
+    WHEN LAG(plan_id) OVER (
+      PARTITION BY customer_id
+      ORDER BY plan_id
+    ) != plan_id
+    AND DATE_PART(
+      'day',
+      payment_date - LAG(payment_date) OVER (
+        PARTITION BY customer_id
+        ORDER BY plan_id
+      )
+    ) < 30 THEN amount - LAG(amount) OVER (
+      PARTITION BY customer_id
+      ORDER BY plan_id
+    )
+    ELSE amount
+  END AS amount,
+  RANK() OVER(
+    PARTITION BY customer_id
+    ORDER BY payment_date
+  ) AS payment_order 
+FROM
+  (
+    SELECT
+      customer_id,
+      s.plan_id,
+      plan_name,
+      generate_series(
+        start_date,
+        CASE
+          WHEN s.plan_id = 3 THEN start_date
+          WHEN s.plan_id = 4 THEN NULL
+          WHEN LEAD(start_date) OVER (
+            PARTITION BY customer_id
+            ORDER BY start_date
+          ) IS NOT NULL THEN LEAD(start_date) OVER (
+            PARTITION BY customer_id
+            ORDER BY start_date
+          )
+          ELSE '2020-12-31'::date
+        END,
+        '1 month'::interval + '1 second'::interval
+      ) AS payment_date,
+      price AS amount
+```
