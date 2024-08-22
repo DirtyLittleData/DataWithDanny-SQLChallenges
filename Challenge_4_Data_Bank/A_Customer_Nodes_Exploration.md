@@ -86,7 +86,7 @@ WHERE end_date != '9999-12-31'
 ---
 
 There are a lot of solutions swimming around the internet that read 24 or 23, which is another way to interpret the question, but if you are looking to find the average days spent per customer on node transfer, in the text it reads that the average is generally quick. We saw this as a flag to re-check the numbers and verify that it would be closer to an average turnaround of two weeks rather than a whole month. In most cases, you get the total of 43,902 entries, but you have to make sure not to lose row entries because that affects your average solution (no GROUP BY, no further SUM).
-
+---
 5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
 ---
 
