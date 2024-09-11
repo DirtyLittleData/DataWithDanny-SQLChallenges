@@ -1,7 +1,7 @@
 ### B. Customer Transactions
 1. What is the unique count and total amount for each transaction type?
 
-```
+```sql
 SELECT
 	txn_type,
     COUNT(txn_type),
@@ -18,7 +18,7 @@ GROUP BY 1
 
 2. What is the average total historical deposit counts and amounts for all customers?
 
-```
+```sql
 SELECT
 	COUNT(txn_type) AS total_deposit_count,
     SUM(txn_amount) AS total_deposit_amount
@@ -36,7 +36,7 @@ FROM customer_transactions
 
 To solve this, we identified the count for each transaction type using a case/when statement, creating new columns to hold each transaction type count. We then queried our new CTE to filter for the stated criteria. We interpreted the question to mean MORE than 1 deposit and AT LEAST 1 withdrawal or 1 purchase.
 
-```
+```sql
 WITH count_CTE AS
 (
 SELECT
@@ -50,7 +50,10 @@ SELECT
   GROUP BY customer_id, 2, 3
   ORDER BY customer_id
 )
-
+```
+![image](https://github.com/user-attachments/assets/8aa1f1b7-9e44-477b-8b7b-ed3816aeed23)
+CTE yields this output.
+```sql
 SELECT 
 	month_number,
     INITCAP(month_name) AS month_name,
