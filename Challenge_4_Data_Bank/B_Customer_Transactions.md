@@ -82,9 +82,132 @@ ORDER BY month_number
 | 2            | February   | 181                   |
 | 3            | March      | 192                   |
 | 4            | April      | 70                    |
+---
 
 4. What is the closing balance for each customer at the end of the month?
 
+### Solution
+
+In our initial assessment of this query, we calculated monthly balances by adding deposits and subtracting purchases and withdrawals from each customer. Upon further analysis we've realized we have not yet carried over balances which is needed to calculate a realistic running total.
+
+```sql
+SELECT 
+    customer_id,
+    EXTRACT(MONTH FROM txn_date) AS month_number,
+    TO_CHAR(txn_date, 'Month'),
+    SUM(CASE WHEN txn_type = 'deposit' THEN txn_amount
+        	WHEN txn_type = 'purchase' THEN -txn_amount
+        	WHEN txn_type = 'withdrawal' THEN -txn_amount END) AS total_amount
+FROM customer_transactions
+GROUP BY customer_id, EXTRACT(MONTH FROM txn_date), 3
+ORDER BY customer_id
+```
+
+| customer_id | month_number | to_char  | total_amount |
+|-------------|--------------|----------|--------------|
+| 1           | 1            | January  | 312          |
+| 1           | 3            | March    | -952         |
+| 2           | 1            | January  | 549          |
+| 2           | 3            | March    | 61           |
+| 3           | 2            | February | -965         |
+| 3           | 4            | April    | 493          |
+| 3           | 3            | March    | -401         |
+| 3           | 1            | January  | 144          |
+| 4           | 1            | January  | 848          |
+| 4           | 3            | March    | -193         |
+| 5           | 1            | January  | 954          |
+| 5           | 4            | April    | -490         |
+| 5           | 3            | March    | -2877        |
+| 6           | 1            | January  | 733          |
+| 6           | 2            | February | -785         |
+| 6           | 3            | March    | 392          |
+| 7           | 1            | January  | 964          |
+| 7           | 3            | March    | -640         |
+| 7           | 2            | February | 2209         |
+| 7           | 4            | April    | 90           |
+| 8           | 2            | February | -180         |
+| 8           | 4            | April    | -972         |
+| 8           | 3            | March    | -464         |
+| 8           | 1            | January  | 587          |
+| 9           | 3            | March    | 930          |
+| 9           | 1            | January  | 849          |
+| 9           | 2            | February | -195         |
+| 9           | 4            | April    | -722         |
+| 10          | 2            | February | 280          |
+| 10          | 4            | April    | -2337        |
+---
+
+```sql
+WITH monthly_balances AS (
+    SELECT 
+        customer_id,
+        EXTRACT(MONTH FROM txn_date) AS month_num,
+        TO_CHAR(txn_date, 'Month') as month_name,
+        SUM(
+            CASE 
+                WHEN txn_type = 'deposit' THEN txn_amount
+                WHEN txn_type IN ('withdrawal', 'purchase') THEN -txn_amount
+            END
+        ) AS monthly_balance
+    FROM 
+        customer_transactions
+    GROUP BY 
+        customer_id, EXTRACT(MONTH FROM txn_date), 3
+    ORDER BY 1, 2, 3
+)
+
+
+SELECT 
+    customer_id,
+    month_num,
+    month_name,
+    monthly_balance,
+    SUM(monthly_balance) OVER (
+        PARTITION BY customer_id
+        ORDER BY month_num
+    ) AS running_balance
+FROM
+    monthly_balances
+ORDER BY 
+    customer_id, month_num;
+```
+
+
+| customer_id | month_num | month_name | monthly_balance | running_balance |
+|-------------|-----------|------------|-----------------|-----------------|
+| 1           | 1         | January    | 312             | 312             |
+| 1           | 3         | March      | -952            | -640            |
+| 2           | 1         | January    | 549             | 549             |
+| 2           | 3         | March      | 61              | 610             |
+| 3           | 1         | January    | 144             | 144             |
+| 3           | 2         | February   | -965            | -821            |
+| 3           | 3         | March      | -401            | -1222           |
+| 3           | 4         | April      | 493             | -729            |
+| 4           | 1         | January    | 848             | 848             |
+| 4           | 3         | March      | -193            | 655             |
+| 5           | 1         | January    | 954             | 954             |
+| 5           | 3         | March      | -2877           | -1923           |
+| 5           | 4         | April      | -490            | -2413           |
+| 6           | 1         | January    | 733             | 733             |
+| 6           | 2         | February   | -785            | -52             |
+| 6           | 3         | March      | 392             | 340             |
+| 7           | 1         | January    | 964             | 964             |
+| 7           | 2         | February   | 2209            | 3173            |
+| 7           | 3         | March      | -640            | 2533            |
+| 7           | 4         | April      | 90              | 2623            |
+| 8           | 1         | January    | 587             | 587             |
+| 8           | 2         | February   | -180            | 407             |
+| 8           | 3         | March      | -464            | -57             |
+| 8           | 4         | April      | -972            | -1029           |
+| 9           | 1         | January    | 849             | 849             |
+| 9           | 2         | February   | -195            | 654             |
+| 9           | 3         | March      | 930             | 1584            |
+| 9           | 4         | April      | -722            | 862             |
+| 10          | 1         | January    | -1622           | -1622           |
+| 10          | 2         | February   | 280             | -1342           |
+| 10          | 3         | March      | -1411           | -2753           |
+| 10          | 4         | April      | -2337           | -5090           |
+---
 
 5. What is the percentage of customers who increase their closing balance by more than 5%?
 
