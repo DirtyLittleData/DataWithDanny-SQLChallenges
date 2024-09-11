@@ -86,7 +86,7 @@ ORDER BY month_number
 
 4. What is the closing balance for each customer at the end of the month?
 
-### Solution
+### Solution 1
 
 In our initial assessment of this query, we calculated monthly balances by adding deposits and subtracting purchases and withdrawals from each customer. Upon further analysis we've realized we have not yet carried over balances which is needed to calculate a realistic running total.
 
@@ -136,6 +136,10 @@ ORDER BY customer_id
 | 10          | 2            | February | 280          |
 | 10          | 4            | April    | -2337        |
 ---
+
+### Solution 2
+
+In our second attempt we revisitied the issue of creating a running total and created the following solution:
 
 ```sql
 WITH monthly_balances AS (
