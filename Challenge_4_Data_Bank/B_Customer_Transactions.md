@@ -215,3 +215,111 @@ ORDER BY
 
 5. What is the percentage of customers who increase their closing balance by more than 5%?
 
+SET search_path = data_bank;
+-- 5. What is the percentage of customers who increase their closing balance by more than 5%?
+
+```sql
+WITH monthly_balances AS (
+    SELECT 
+        customer_id,
+        EXTRACT(MONTH FROM txn_date) AS month_num,
+        TO_CHAR(txn_date, 'Month') as month_name,
+        SUM(
+            CASE 
+                WHEN txn_type = 'deposit' THEN txn_amount
+                WHEN txn_type IN ('withdrawal', 'purchase') THEN -txn_amount
+            END
+        ) AS monthly_balance
+    FROM 
+        customer_transactions
+    GROUP BY 
+        customer_id, EXTRACT(MONTH FROM txn_date), 3
+    ORDER BY 1, 2, 3
+)
+,
+closing_CTE AS (
+  SELECT 
+    customer_id,
+    month_num,
+    month_name,
+    monthly_balance,
+    SUM(monthly_balance) OVER (
+        PARTITION BY customer_id
+        ORDER BY month_num
+    ) AS closing_balance
+FROM
+    monthly_balances
+ORDER BY 
+    customer_id, month_num
+)
+,
+CTE AS (
+SELECT
+    customer_id,
+    month_num,
+    month_name,
+    closing_balance AS new_value,
+    CASE 
+        WHEN closing_balance IS NOT NULL THEN 
+        LAG(closing_balance, 1) OVER (PARTITION BY customer_id ORDER BY month_num)
+        ELSE 0 
+        END 
+        AS old_value
+FROM closing_CTE
+ORDER BY 1, 2
+)
+SELECT
+    customer_id,
+    month_num,
+    month_name,
+    old_value AS previous_balance,
+    new_value AS current_balance,
+    CASE
+        WHEN old_value = 0 THEN NULL
+        ELSE ROUND((new_value - old_value) / NULLIF(old_value, 0) * 100)
+    END AS percent_change
+FROM CTE
+ORDER BY customer_id, month_num;
+```
+
+#AI Solution (Thanks Claude!)
+
+```sql
+WITH monthly_balances AS (
+  SELECT
+    customer_id,
+    DATE_TRUNC('month', txn_date) AS month,
+    SUM(CASE WHEN txn_type = 'deposit' THEN txn_amount ELSE -txn_amount END) AS monthly_balance_change
+  FROM customer_transactions
+  GROUP BY customer_id, DATE_TRUNC('month', txn_date)
+),
+customer_balance_change AS (
+  SELECT
+    customer_id,
+    SUM(monthly_balance_change) OVER (PARTITION BY customer_id ORDER BY month) AS running_balance,
+    month,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY month) AS first_month,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY month DESC) AS last_month
+  FROM monthly_balances
+),
+first_last_balance AS (
+  SELECT
+    customer_id,
+    MAX(CASE WHEN first_month = 1 THEN running_balance END) AS first_balance,
+    MAX(CASE WHEN last_month = 1 THEN running_balance END) AS last_balance
+  FROM customer_balance_change
+  GROUP BY customer_id
+),
+balance_increase AS (
+  SELECT
+    COUNT(*) AS total_customers,
+    SUM(CASE 
+      WHEN last_balance > first_balance * 1.05 AND first_balance != 0 THEN 1
+      ELSE 0
+    END) AS customers_with_increase
+  FROM first_last_balance
+)
+SELECT
+  ROUND((customers_with_increase * 100.0 / total_customers)) AS percentage_with_more_than_5_percent_increase
+FROM balance_increase;
+```
