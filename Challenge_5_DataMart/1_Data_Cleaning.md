@@ -161,27 +161,36 @@ And the mapping for the demographic column:
 once again we've determined to alter the table to add this column (at some later date we me return to create a stored procedure)
 
 ```sql
---age band
+--age band + demographic
 ALTER TABLE weekly_sales
-ADD COLUMN age_band VARCHAR(50);
+ADD COLUMN age_band VARCHAR(50),
+ADD COLUMN demographic VARCHAR(50);
+
+--add values to age band + demographic 
 
 UPDATE weekly_sales
 SET age_band = CASE
     WHEN SUBSTRING(segment FROM '[0-9]')::int = 1 THEN 'Young Adults'
     WHEN SUBSTRING(segment FROM '[0-9]')::int = 2 THEN 'Middle Aged'
     WHEN SUBSTRING(segment FROM '[0-9]')::int IN (3, 4) THEN 'Retirees'
+    ELSE 'Unknown' -- Optional, in case `segment` does not match any of the cases
+END,
+demographic = CASE
+    WHEN SUBSTRING(segment FROM '[a-zA-Z]') = 'C' THEN 'Couples'
+    WHEN SUBSTRING(segment FROM '[a-zA-Z]') = 'F' THEN 'Families'
+    ELSE 'Unknown' -- Optional, in case `segment` does not match any of the cases
 END;
 ```
 
 ***output***
 
-| week_date | region | platform | segment | customer_type | transactions | sales    | week_date_converted         | week_number | month_number | year_number | age_band     |
-|-----------|--------|----------|---------|---------------|--------------|----------|-----------------------------|-------------|--------------|-------------|-------------|
-| 31/8/20   | ASIA   | Retail   | C3      | New           | 120631       | 3656163  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Retirees    |
-| 31/8/20   | ASIA   | Retail   | F1      | New           | 31574        | 996575   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults|
-| 31/8/20   | USA    | Retail   | null    | Guest         | 529151       | 16509610 | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | null        |
-| 31/8/20   | EUROPE | Retail   | C1      | New           | 4517         | 141942   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults|
-| 31/8/20   | AFRICA | Retail   | C2      | New           | 58046        | 1758388  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Middle Aged |
+| week_date | region | platform | segment | customer_type | transactions | sales    | week_date_converted         | week_number | month_number | year_number | age_band     | demographic |
+|-----------|--------|----------|---------|---------------|--------------|----------|-----------------------------|-------------|--------------|-------------|-------------|-------------|
+| 31/8/20   | ASIA   | Retail   | C3      | New           | 120631       | 3656163  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Retirees    | Couples     |
+| 31/8/20   | ASIA   | Retail   | F1      | New           | 31574        | 996575   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults| Families    |
+| 31/8/20   | USA    | Retail   | null    | Guest         | 529151       | 16509610 | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Unknown     | Unknown     |
+| 31/8/20   | EUROPE | Retail   | C1      | New           | 4517         | 141942   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults| Couples     |
+| 31/8/20   | AFRICA | Retail   | C2      | New           | 58046        | 1758388  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Middle Aged | Couples     |
 
 
 
