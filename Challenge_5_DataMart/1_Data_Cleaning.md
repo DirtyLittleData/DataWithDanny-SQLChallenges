@@ -158,4 +158,31 @@ And the mapping for the demographic column:
 
 * Ensure all null string values with an "unknown" string value in the original segment column as well as the new age_band and demographic columns
 
+once again we've determined to alter the table to add this column (at some later date we me return to create a stored procedure)
+
+```sql
+--age band
+ALTER TABLE weekly_sales
+ADD COLUMN age_band VARCHAR(50);
+
+UPDATE weekly_sales
+SET age_band = CASE
+    WHEN SUBSTRING(segment FROM '[0-9]')::int = 1 THEN 'Young Adults'
+    WHEN SUBSTRING(segment FROM '[0-9]')::int = 2 THEN 'Middle Aged'
+    WHEN SUBSTRING(segment FROM '[0-9]')::int IN (3, 4) THEN 'Retirees'
+END;
+```
+
+***output***
+
+| week_date | region | platform | segment | customer_type | transactions | sales    | week_date_converted         | week_number | month_number | year_number | age_band     |
+|-----------|--------|----------|---------|---------------|--------------|----------|-----------------------------|-------------|--------------|-------------|-------------|
+| 31/8/20   | ASIA   | Retail   | C3      | New           | 120631       | 3656163  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Retirees    |
+| 31/8/20   | ASIA   | Retail   | F1      | New           | 31574        | 996575   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults|
+| 31/8/20   | USA    | Retail   | null    | Guest         | 529151       | 16509610 | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | null        |
+| 31/8/20   | EUROPE | Retail   | C1      | New           | 4517         | 141942   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults|
+| 31/8/20   | AFRICA | Retail   | C2      | New           | 58046        | 1758388  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Middle Aged |
+
+
+
 * Generate a new avg_transaction column as the sales value divided by transactions rounded to 2 decimal places for each record
