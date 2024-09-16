@@ -104,6 +104,41 @@ LIMIT 10;
 
 * Add a calendar_year column as the 4th column containing either 2018, 2019 or 2020 values
 
+combining all the above cleaning steps:
+```sql
+-- Step 1: Add new columns
+ALTER TABLE weekly_sales
+ADD COLUMN week_date_converted DATE,
+ADD COLUMN week_number INT,
+ADD COLUMN month_number INT,
+ADD COLUMN year_number INT;
+
+-- Step 2: Update week_date_converted with converted date values
+UPDATE weekly_sales
+SET week_date_converted = TO_DATE(week_date, 'DD-MM-YY');
+
+-- Step 3: Update week_number and month_number based on the converted date
+UPDATE weekly_sales
+SET week_number = EXTRACT(week FROM week_date_converted),
+    month_number = EXTRACT(month FROM week_date_converted),
+	year_number = EXTRACT(year FROM week_date_converted);
+```
+
+*** output ***
+| week_date | region  | platform | segment | customer_type | transactions | sales   | week_date_converted     | week_number | month_number | year_number |
+|-----------|---------|----------|---------|---------------|--------------|---------|-------------------------|-------------|--------------|-------------|
+| 31/8/20   | ASIA    | Retail   | C3      | New           | 120631       | 3656163 | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | ASIA    | Retail   | F1      | New           | 31574        | 996575  | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | USA     | Retail   | null    | Guest         | 529151       | 16509610| 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | EUROPE  | Retail   | C1      | New           | 4517         | 141942  | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | AFRICA  | Retail   | C2      | New           | 58046        | 1758388 | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | CANADA  | Shopify  | F2      | Existing      | 1336         | 243878  | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | AFRICA  | Shopify  | F3      | Existing      | 2514         | 519502  | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | ASIA    | Shopify  | F1      | Existing      | 2158         | 371417  | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | AFRICA  | Shopify  | F2      | New           | 318          | 49557   | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+| 31/8/20   | AFRICA  | Retail   | C3      | New           | 111032       | 3888162 | 2020-08-31T00:00:00.000Z | 36          | 8            | 2020        |
+
+
 * Add a new column called age_band after the original segment column using the following mapping on the number inside the segment value
 
 Here is the data formatted into a two-column markdown table:
