@@ -195,3 +195,20 @@ END;
 
 
 * Generate a new avg_transaction column as the sales value divided by transactions rounded to 2 decimal places for each record
+
+```sql 
+select * ,
+	round((sales/transactions),2) as avg_transaction
+from weekly_sales
+limit 5
+```
+
+***output***
+
+ | week_date | region | platform | segment | customer_type | transactions | sales    | week_date_converted         | week_number | month_number | year_number | age_band     | demographic | avg_transaction |
+|-----------|--------|----------|---------|---------------|--------------|----------|-----------------------------|-------------|--------------|-------------|--------------|-------------|-----------------|
+| 31/8/20   | ASIA   | Retail   | C3      | New           | 120631       | 3656163  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Retirees     | Couples     | 30.00           |
+| 31/8/20   | ASIA   | Retail   | F1      | New           | 31574        | 996575   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults | Families    | 31.00           |
+| 31/8/20   | USA    | Retail   | null    | Guest         | 529151       | 16509610 | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Unknown      | Unknown     | 31.00           |
+| 31/8/20   | EUROPE | Retail   | C1      | New           | 4517         | 141942   | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Young Adults | Couples     | 31.00           |
+| 31/8/20   | AFRICA | Retail   | C2      | New           | 58046        | 1758388  | 2020-08-31T00:00:00.000Z    | 36          | 8            | 2020        | Middle Aged  | Couples     | 30.00           |
