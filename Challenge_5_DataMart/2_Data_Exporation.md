@@ -199,3 +199,53 @@ from total_cte
 |----------|-------------------------|---------------------------|
 | Shopify  | 1,089,017,790           | 0.0267                    |
 | Retail   | 39,654,616,437          | 0.9733                    |
+
+
+7. What is the percentage of sales by demographic for each year in the dataset?
+
+```sql
+with demographic_sales_CTE AS
+(
+select year_number, demographic,sum(sales) as total_by_demo, sum(sum(sales)) over (partition by year_number) as yearly_sales_total 
+from weekly_sales 
+group by 1,2
+order by 1,2
+limit 5
+)
+
+select *, 
+round(total_by_demo/yearly_sales_total *100,2) as percent_of_sales_by_demographic
+from demographic_sales_CTE
+```
+
+*** output ***
+| year_number | demographic | total_by_demo | yearly_sales_total | percent_of_sales_by_demographic |
+|-------------|-------------|---------------|--------------------|--------------------------------|
+| 2018        | Couples     | 3,402,388,688 | 12,897,380,827     | 26.38%                         |
+| 2018        | Families    | 4,125,558,033 | 12,897,380,827     | 31.99%                         |
+| 2018        | Unknown     | 5,369,434,106 | 12,897,380,827     | 41.63%                         |
+| 2019        | Couples     | 3,749,251,935 | 13,746,032,500     | 27.28%                         |
+| 2019        | Families    | 4,463,918,344 | 13,746,032,500     | 32.47%                         |
+
+8. Which age_band and demographic values contribute the most to Retail sales?
+
+```sql
+SELECT platform, age_band, demographic, sum(sales) as total_sales
+from weekly_sales
+where platform = 'Retail'
+group by 1,2,3
+order by total_sales DESC
+limit 5
+```
+
+***output***
+
+| platform | age_band     | demographic | total_sales    |
+|----------|--------------|-------------|----------------|
+| Retail   | Unknown      | Unknown     | 16,067,285,533 |
+| Retail   | Retirees     | Families    | 6,634,686,916  |
+| Retail   | Retirees     | Couples     | 6,370,580,014  |
+| Retail   | Middle Aged  | Families    | 4,354,091,554  |
+| Retail   | Young Adults | Couples     | 2,602,922,797  |
+
+9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
