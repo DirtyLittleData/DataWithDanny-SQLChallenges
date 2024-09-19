@@ -249,3 +249,21 @@ limit 5
 | Retail   | Young Adults | Couples     | 2,602,922,797  |
 
 9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
+
+```sql
+select platform, year_number, avg(transactions) as avg_transaction 
+from weekly_sales
+group by 2,1
+order by 2,1
+limit 25
+```
+
+***output***
+| platform | year_number | avg_transaction |
+|----------|-------------|-----------------|
+| Retail   | 2018        | 120770.14       |
+| Shopify  | 2018        | 523.20          |
+| Retail   | 2019        | 127360.00       |
+| Shopify  | 2019        | 665.89          |
+| Retail   | 2020        | 130698.37       |
+| Shopify  | 2020        | 889.35          |
