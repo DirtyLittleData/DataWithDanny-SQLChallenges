@@ -38,7 +38,7 @@ SELECT
     CASE 
         WHEN period = 'After' THEN 
             ROUND((total_sales - (SELECT total_sales FROM BEFORE_AFTER_CTE WHERE period = 'Before')) / NULLIF((SELECT total_sales FROM BEFORE_AFTER_CTE WHERE period = 'Before'), 0) * 100.0, 2)
-        END AS growth_rate
+        END AS growth_rate,
 FROM BEFORE_AFTER_CTE;
 
 
