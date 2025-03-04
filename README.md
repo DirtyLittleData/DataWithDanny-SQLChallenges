@@ -2,8 +2,9 @@
 
 This repository contains the Breaking Plaid solutions to the **8 Week SQL Challenge**, an initiative by **Danny Ma** designed to enhance SQL skills through practical case studies. Each case study presents unique business scenarios that require **SQL-based data analysis** to solve.
 
+<p align="center">
 ![image](https://github.com/user-attachments/assets/90afb1e0-989b-4cb8-b9d7-9624452e3ef4)
-
+</p>
 
 ## 📌 Case Studies
 
