@@ -6,7 +6,7 @@ This repository contains the Breaking Plaid solutions to the **8 Week SQL Challe
   <img src="https://github.com/user-attachments/assets/90afb1e0-989b-4cb8-b9d7-9624452e3ef4" alt="Description" width="300">
 </p>
 
-## 📌 Case Studies
+## Case Studies
 
 - **Danny's Diner**: Analyze sales and membership data to derive customer insights for a fictional diner.
 - **Pizza Runner**: Examine pizza delivery data to optimize operations and improve service efficiency.
@@ -18,7 +18,7 @@ This repository contains the Breaking Plaid solutions to the **8 Week SQL Challe
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 - **`Challenge_X_CaseStudyName/`** - Directory containing all relevant files for each case study.
 - **`ERD/`** - Entity-Relationship Diagrams illustrating the database schema.
@@ -28,7 +28,7 @@ This repository contains the Breaking Plaid solutions to the **8 Week SQL Challe
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 To explore the solutions:
 
