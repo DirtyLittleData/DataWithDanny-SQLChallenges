@@ -32,21 +32,21 @@ This repository contains the Breaking Plaid solutions to the **8 Week SQL Challe
 
 To explore the solutions:
 
-### 1️ Clone the Repository
+### 1️: Clone the Repository
 ```bash
 git clone https://github.com/BreakingPlaid/DataWithDanny-SQLChallenges.git
 ```
 
-### 2️ Navigate to a Case Study
+### 2️: Navigate to a Case Study
 bash
 ```
 cd DataWithDanny-SQLChallenges/Challenge_X_CaseStudyName
 ```
 
-### 3️ Review the README
+### 3️: Review the README
 Each case study's README.md provides an overview of the problem, methodology, and conclusions.
 
-### 4️ Examine the SQL Scripts
+### 4️: Examine the SQL Scripts
 Located in the SQL/ directory, these scripts contain the queries used for analysis.
 
 ### 📚 Resources
